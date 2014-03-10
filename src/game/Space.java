@@ -1,5 +1,9 @@
 package game;
 
+import game.enums.SpaceType;
+import game.enums.Visibility;
+import game.player.Item;
+
 import java.util.ArrayList;
 
 /**
@@ -15,7 +19,7 @@ public class Space {
 	private int y;
 	private Item item;
 	private boolean creature;
-	private ArrayList<Animus> beings;
+	private Visibility seen;
 
 	/**
 	 * Class constructor
@@ -32,11 +36,11 @@ public class Space {
 		this.y = y;
 		this.level = cL;
 		this.setSpace(s);
-		this.beings = Dungeon.getLevels()[level].getBeings();		
+		this.seen = Visibility.INSIGHT;
 	}
 
 	public boolean isEmpty() {
-		if((space == SpaceType.EMPTY || space == SpaceType.EXIT) && creature == false) {
+		if((space == SpaceType.EMPTY || space == SpaceType.EXIT || space == SpaceType.JELLYFISH)) {
 			return true;
 		} else {
 			return false;
@@ -57,19 +61,20 @@ public class Space {
 		return space;
 	}
 
+	//TODO add visibility to method
 	public String toString() {	
 		if (creature == true) {
-			for(int i = 0; i < beings.size(); i++) {
-				if(this.x == beings.get(i).x && this.y == beings.get(i).y) {
-					return beings.get(i).toString();
+			for(int i = 0; i < Game.getLevel(level).getBeings().size(); i++) {
+				if(this.x == Game.getLevel(level).getBeings().get(i).x && 
+				   this.y == Game.getLevel(level).getBeings().get(i).y) {
+					return Game.getLevel(level).getBeings().get(i).toString();
 				}
 			}
 		} else  if (item != null) {
 			return item.toString();
-		} else {
-			return getSpace().toString();
-		}
-		return null;
+		} 
+		
+		return getSpace().toString();
 	}
 	/**
 	 * @return the x
@@ -89,7 +94,12 @@ public class Space {
 	 * @param space
 	 *            the space to set
 	 */
-	void setSpace(SpaceType space) {
+	public void setSpace(SpaceType space) {
 		this.space = space;
+	}
+
+	public Visibility getVisibility() {
+		// TODO Auto-generated method stub
+		return seen;
 	}
 }

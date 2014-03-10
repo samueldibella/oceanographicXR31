@@ -1,4 +1,4 @@
-package game;
+package game.enums;
 
 /**Enum for maze spaces.
  * 
@@ -10,7 +10,11 @@ public enum SpaceType {
 	HERO('@'),
 	WALL('#'),
 	EXIT('>'),
-	JELLYFISH('u');
+	JELLYFISH('u'),
+	BARRICUDA('B'),
+	EEL('e'),
+	SHARK('S'),
+	AIM('*');
 	
 	private char type;
 	

@@ -1,19 +1,31 @@
-package game;
+package game.player;
+import game.Animus;
+import game.Game;
+import game.Level;
+import game.enums.ItemType;
+import game.enums.SpaceType;
 
 public class Player extends Animus{
 	Item[] inventory;
+	int inventoryIndex;
+	Hit[] hits;
+	int hitIndex;
 	boolean isAlive;
 	
-	Player(int xCo, int yCo) {
+	public Player(int xCo, int yCo) {
 		hp = 100;
 		speed = 50;
 		dmg = 20;
 		currentLevel = 0;
-		inventory = new Item[5];
+		inventory = new Item[26];
+		inventoryIndex = 0;
 		aspect = SpaceType.HERO;
 		x = xCo;
 		y = yCo;
 		isAlive = true;
+		hits = new Hit[20];
+		hitIndex = 0;
+		
 	}
 	
 	@Override
@@ -28,33 +40,41 @@ public class Player extends Animus{
 					if(Game.getDungeon()[currentLevel].getDesign()[y - 1][x].isEmpty()) {
 						y--;
 						hp--;
+						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 2:
 					if(Game.getDungeon()[currentLevel].getDesign()[y][x + 1].isEmpty()) {
 						x++;
 						hp--;
+						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 3:
 					if(Game.getDungeon()[currentLevel].getDesign()[y + 1][x].isEmpty()) {
 						y++;
 						hp--;
+						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 4:
 					if(Game.getDungeon()[currentLevel].getDesign()[y][x - 1].isEmpty()) {
 						x--;
 						hp--;
+						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 5:
 					if(Game.getDungeon()[currentLevel].getDesign()[y][x].getSpace() == SpaceType.EXIT) {
 						currentLevel++;
+						Game.playerLevel++;
 						Game.getDungeon()[currentLevel] = new Level(10, x, y, currentLevel);
 						hp = 100;
-					}
+						Game.setPlayerTurn(false); 
+					}	
 			}
+			
+			
 			
 			if(hp == 0) {
 				isAlive = false;
@@ -63,6 +83,9 @@ public class Player extends Animus{
 	
 	public String inventory() {
 		String output = "Inventory\n";
+		for(int i = 0; i < inventoryIndex; i++) {
+			output += inventory[i].referent + ". " + inventory[i];
+		}
 		return output;
 	}
 	
@@ -77,6 +100,22 @@ public class Player extends Animus{
 	
 	public boolean getAlive() {
 		return isAlive;
+	}
+	
+	public void addItem(ItemType item) {
+		
+	}
+	
+	public void addHit(Hit hit) {
+		hits[hitIndex] = hit;
+	}
+	
+	public Hit[] getHits() {
+		return hits;
+	}
+	
+	public int getHitsIndex() {
+		return hitIndex;
 	}
 	
 	public int getX() {

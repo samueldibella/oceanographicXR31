@@ -1,13 +1,22 @@
 package game;
 
+import game.enums.SpaceType;
+
 public abstract class Animus {
-	int currentLevel;
-	int hp;
-	int speed;
-	int dmg;
-	int x;
-	int y;
-	SpaceType aspect;
+	protected int currentLevel;
+	protected int hp;
+	protected int speed;
+	protected int dmg;
+	protected int x;
+	protected int y;
+	protected SpaceType aspect;
+	
+	public Animus() {
+	}
+	
+	public void wander(SpaceType type) {
+		
+	}
 	
 	public void move(int direction) {
 	//	Space[] empty = Dungeon.getLevels()[currentLevel].design.checkNeigbors(space);

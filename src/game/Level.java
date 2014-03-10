@@ -1,4 +1,11 @@
 package game;
+import game.enemies.Barricuda;
+import game.enemies.Eel;
+import game.enemies.Jellyfish;
+import game.enemies.Shark;
+import game.enums.SpaceType;
+import game.player.Player;
+
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -31,20 +38,11 @@ public class Level extends PApplet{
 	 */
 	public Level(int level, int x, int y, int currentLevel) {
 		index = currentLevel;
-		difficulty = (int) (level * Math.random()) + 8;
+		difficulty = (int) ((level + 10) * Math.random());
 		design = new Space[Y_SIZE][X_SIZE];
 		exitPlaced = false;
 		livingBeings = new ArrayList<Animus>();
 		designGenerate(design, x, y);
-		
-		/*do {
-		heroX = (int) Math.random() * X_SIZE;
-		heroY = (int) Math.random() * Y_SIZE;
-		} while (design[heroY][heroX].isEmpty() == true);*/
-		//Animus[] livingBeings = new Animus[difficulty + 1];
-
-		//hero = new Player(heroX, heroY);
-		
 	}
 	
 	void designGenerate(Space[][] design, int x, int y) {
@@ -63,13 +61,9 @@ public class Level extends PApplet{
 			}
 		}
 		
-		cellularAlter();
-		cellularAlter();
-		cellularAlter();
-		cellularAlter();
-		cellularAlter();
-		
-		
+		for(int i = 0; i < 5; i++) {
+			cellularAlter();
+		}
 		
 		FloorWalker floor = new FloorWalker(heroX, heroY);
 		
@@ -88,17 +82,28 @@ public class Level extends PApplet{
 		
 		for(int j = 0; j < Y_SIZE; j++) {
 			for(int i = 0; i < X_SIZE; i++) {
-				if(design[j][i].isEmpty()) {
-					int monsterGen = (int) (Math.random() * 50);
+				if(design[j][i].getSpace() == SpaceType.EMPTY) {
+					int monsterGen = (int) (Math.random() * 100) - difficulty;
+					
 					if(monsterGen < 3) {
 						livingBeings.add(new Jellyfish(i, j));
-						design[j][i].setCreature(true);
+						design[j][i].setSpace(SpaceType.JELLYFISH);
+					} else if(monsterGen < 6) {
+						livingBeings.add(new Eel(i, j));
+						design[j][i].setSpace(SpaceType.EEL);
+					} else if(monsterGen < 7) {
+						livingBeings.add(new Barricuda(i,j));
+						design[j][i].setSpace(SpaceType.BARRICUDA);
+					} else if(monsterGen < 8) {
+						livingBeings.add(new Shark(i,j));
+						design[j][i].setSpace(SpaceType.SHARK);
 					}
 				}
 			}
 		}
 	}
 	
+	//iterates cellular automation
 	void cellularAlter() {
 		int[][] overlay = new int[Y_SIZE][X_SIZE];
 		
@@ -121,6 +126,7 @@ public class Level extends PApplet{
 		}
 	}
 	
+	//builds walls all around edge of map
 	void assertWalls() {
 		for (int i = 0; i < X_SIZE; i++) {
 			design[0][i] = new Space(SpaceType.WALL,i,0, index);
@@ -136,13 +142,35 @@ public class Level extends PApplet{
 		}
 	}
 	
+	//orders all enemies on level to execute their move
 	void monsterMove() {
 		for(int i = 0; i < livingBeings.size(); i++) {
-			int chance = (int) Math.random() * 9;
+			int chance = (int) (Math.random() * 9);
 			livingBeings.get(i).move(chance);
 		}
+		
+		Game.setPlayerTurn(true);
 	}
 	
+	//attempt to tell if space between two points is totally empty
+	public boolean rayCast(int x1, int y1, int x2, int y2) {
+		int rise = (int) (y2 - y1);
+		int run = (int) (x2 - x1);
+		int slope = rise/run;
+		
+		System.out.printf("%d rise %d run %d slope", rise, run, slope);
+		for(int i = 0; i < Math.abs(run); i++) {
+			for(int j = 0; j < Math.abs(run); j++) {
+				if(design[j][i].getSpace() == SpaceType.WALL) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	//total empty spaces next to passed space
 	public int localEmpty(Space p) {
 		int emptySpaces = 0;
 		int yScale;
