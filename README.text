@@ -1,0 +1,27 @@
+oceanographicXR31
+=================
+Reach the 26th level of the underwater caves.
+
+Controls:
+wasd and arrow keys to move. Only cardinal directions,
+and there is no wait command.
+
+Press 'ESC' to quit at anytime.
+
+'g' picks up items in your space.
+'>' to go down a level while on an exit.
+
+On the left of the screen is your inventory, pressing the key 
+attached to one the items there will use it.
+
+Items:
+Harpoon: Kills one enemy in range.
+Drill: Drills out all walls and enemies in a cardinal direction;
+Oxygen Tank: adds 50% to your supply.
+Echolocative Map: Reveals level map.
+Comm Relay: Repairs some screen damage.
+
+Local Sonar:
+In the bottom right corner of the screen is the local sonar.
+This will always display your surroundings, whether they are
+visible to you or not.
