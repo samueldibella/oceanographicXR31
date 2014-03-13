@@ -4,7 +4,8 @@ import game.Game;
 import game.enums.SpaceType;
 
 public class Hit {
-	int radius;
+	float maxRadius;
+	float currentRadius;
 	int x;
 	int y;
 	SpaceType type;
@@ -13,19 +14,27 @@ public class Hit {
 	int deviationX;
 	
 	Hit(SpaceType type2) {
+		x = Game.playerLevel;
+		y = 
+		
 		switch(type2) {
 		case JELLYFISH:
-			radius = 4;
-			deviationX = x - ((int) Math.random() * 6) - 3;
-			deviationY = y - ((int) Math.random() * 6) - 3;
+			maxRadius = 40;
+			currentRadius = 1;
+			deviationX = x - ((int) Math.random() * 20) - 10;
+			deviationY = y - ((int) Math.random() * 20) - 10;
 			break;
 		case EEL:
-			radius = 5;
+			maxRadius = 40;
+			currentRadius = 1;
 			break;
 		case SHARK:
-			radius = 6;
+			maxRadius = 70;
+			currentRadius = 1;
 			break;
 		case BARRICUDA:
+			maxRadius = 10;
+			currentRadius = 1;
 			deviation = (int) (Game.hero.getX() + ((Math.random() * 20) - 10));
 			break;
 		}
@@ -55,11 +64,15 @@ public class Hit {
 		return y;
 	}
 	
-	public int getRadius() {
-		return radius;
+	public float getCurrentRadius() {
+		return currentRadius;
 	}
 	
 	public SpaceType getType() {
 		return type;
+	}
+	
+	public String toString() {
+		return type.toString();
 	}
 }

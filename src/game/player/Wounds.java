@@ -12,8 +12,11 @@ public class Wounds {
 	}
 	
 	public void addHit(SpaceType type) {
+		
 		Hit hit = new Hit(type);
 		hits[hitIndex] = hit;
+		hitIndex++;
+		System.out.print(this.toString());
 	}
 	
 	public Hit[] getHits() {
@@ -30,5 +33,17 @@ public class Wounds {
 	
 	public int getHitsIndex() {
 		return hitIndex;
+	}
+	
+	public String toString() {
+		String output = "Hits:\n";
+		
+		for(int i = 0; i < hitIndex; i++) {
+			output += hits[i] + "\n";
+		}
+		
+		output += "\n";
+		
+		return output;
 	}
 }

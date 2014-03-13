@@ -19,6 +19,8 @@ public class Game extends PApplet {
 	int result;
 	int initX;
 	int initY;
+	static int screenX;
+	static int screenY;
 	Mode overall;
 	static Queue textBuffer = new Queue();
 	boolean moveEntered; 
@@ -38,6 +40,7 @@ public class Game extends PApplet {
 		result = 0;
 		initX = (int) (Math.random() * Level.X_SIZE - 2) + 2;
 		initY = (int) (Math.random() * Level.Y_SIZE - 2) + 2;
+		
 		hero = new Player(initX, initY);
 		dungeon[0] = new Level(10, initX, initY, 0);
 		dungeon[0].updateVisibility();
@@ -63,13 +66,21 @@ public class Game extends PApplet {
 		switch(overall) {
 		case GAME:
 			pDisplay(dungeon[hero.getCurrentLevel()]);
-			//hitDisplay();
+			hitDisplay();
 			if(playerTurn == true && moveEntered == true) {
 				hero.move(result);
 				dungeon[hero.getCurrentLevel()].updateVisibility();
 				moveEntered = false;
 			} else if(playerTurn == false){
 				dungeon[hero.getCurrentLevel()].monsterMove();				
+			}
+			
+			if(hero.getAlive() == false) {
+				if(playerWin) {
+					overall = Mode.WIN;
+				} else {
+					overall = Mode.LOSE;
+				}
 			}
 			
 			result = 0;
@@ -105,27 +116,30 @@ public class Game extends PApplet {
 	}
 	
 	private void hitDisplay() {
-		// TODO Auto-generated method stub
+		//sub method for hit overlay
 		Wounds body = hero.getBody();
 		
 		Hit[] hitList = body.getHits();
 		int index = body.getHitsIndex();
 		
-		for(int i = 0; i <= index; i++) {
+		for(int i = 0; i < index; i++) {
 			switch(hitList[i].getType()) {
-			case SHARK:
-				fill(255,0,0);
-				ellipse(hitList[i].getX(), hitList[i].getY(), hitList[i].getRadius(), hitList[i].getRadius());
-				break;
-			case EEL:
-				break;
 			case JELLYFISH:
-				fill(32,178,170);
-				ellipse(hitList[i].getDeviationX(), hitList[i].getDeviationY(), hitList[i].getRadius(), hitList[i].getRadius());
-				ellipse(hitList[i].getX(), hitList[i].getY(), hitList[i].getRadius(), hitList[i].getRadius());
+				fill(255);
+				ellipse(0, 0, 120, 120);
+				
+				//not array coordinates, but rather screen coordinates
+				ellipse(hit.getX() , hit.getY(), 30,30);
 				break;
 			case BARRICUDA:
 				break;
+			case SHARK:
+				fill(255,0,0);
+				ellipse(hitList[i].getX(), hitList[i].getY(), hitList[i].getCurrentRadius(), hitList[i].getCurrentRadius());
+				break;
+				
+			case EEL:
+					break;
 			default:
 				break;
 			
@@ -144,7 +158,7 @@ public class Game extends PApplet {
 		
 		//basic text information
 		text(hero.vitals(), 10, 20);
-		text(hero.getInventory().toString(), 10, 150);
+		text(hero.getInventory().toString(), 10, 155);
 		text("Oceanographic Expedition X R31", 575, 20);
 		text(buffer(), 1200, 20);
 		
@@ -199,6 +213,11 @@ public class Game extends PApplet {
 				if(j == hero.getY() && i == hero.getX()) {
 					fill(255,193,37);
 					text(hero.toString(), baseX, baseY);
+					
+				//	System.out.printf("ScreenX: %d ScreenY: %d\n" , screenX, screenY);
+					//for use by hitDisplay()
+					Game.screenX = baseX;
+					Game.screenY = baseY;
 				} else if (display[j][i].getItem() != null){
 					fill(255,0,0,opacity);
 					text(display[j][i].toString(), baseX, baseY);	
