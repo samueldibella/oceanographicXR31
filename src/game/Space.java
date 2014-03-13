@@ -1,5 +1,6 @@
 package game;
 
+import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
 import game.player.Item;
@@ -20,6 +21,7 @@ public class Space {
 	private Item item;
 	private boolean creature;
 	private Visibility seen;
+	private int scent;
 
 	/**
 	 * Class constructor
@@ -34,11 +36,39 @@ public class Space {
 	Space(SpaceType s, int x, int y, int cL) {
 		this.x = x;
 		this.y = y;
-		this.level = cL;
-		this.setSpace(s);
-		this.seen = Visibility.INSIGHT;
+		level = cL;
+		setSpace(s);
+		seen = Visibility.UNVISITED;
+		scent = 0;
+	}
+	
+	Space(SpaceType s, int x, int y, int cL, Visibility vision) {
+		this.x = x;
+		this.y = y;
+		level = cL;
+		setSpace(s);
+		seen = vision;
+		scent = 0;
 	}
 
+	public void instillScent(int num) {
+		scent = num;
+		passScent();
+	}
+	
+	public void passScent() {
+		Level level = Game.dungeon[this.level];
+		Space[] neighbors = level.checkNeighbors(this);
+		
+		if(scent > 0) {
+			for(int i = 0; i < 4; i++) {
+				if(neighbors[i] != null) {
+					neighbors[i].instillScent((scent - i)/2);
+				}
+			}
+		}
+	}
+	
 	public boolean isEmpty() {
 		if((space == SpaceType.EMPTY || space == SpaceType.EXIT || space == SpaceType.JELLYFISH)) {
 			return true;
@@ -63,19 +93,30 @@ public class Space {
 
 	//TODO add visibility to method
 	public String toString() {	
-		if (creature == true) {
-			for(int i = 0; i < Game.getLevel(level).getBeings().size(); i++) {
-				if(this.x == Game.getLevel(level).getBeings().get(i).x && 
-				   this.y == Game.getLevel(level).getBeings().get(i).y) {
-					return Game.getLevel(level).getBeings().get(i).toString();
+		ArrayList<Animus> beings = Game.getLevel(level).getBeings();
+		
+		if (creature == true && seen == Visibility.INSIGHT) {
+			for(int i = 0; i < beings.size(); i++) {
+				if(this.x == beings.get(i).x && this.y == beings.get(i).y) {
+					return space.toString();
 				}
 			}
-		} else  if (item != null) {
+		} else if( seen == Visibility.VISITED && space != SpaceType.WALL && space != SpaceType.EXIT) {
+			return SpaceType.EMPTY.toString();
+		}
+		
+		if (item != null) {
 			return item.toString();
 		} 
 		
-		return getSpace().toString();
+		return space.toString();
+
 	}
+	
+	public String trueSee() {
+		return space.toString();
+	}
+	
 	/**
 	 * @return the x
 	 */
@@ -90,6 +131,19 @@ public class Space {
 		return y;
 	}
 
+	public Item getItem() {
+		return item;
+	}
+	
+	//implement better version
+	public void setItem(ItemType type) {
+		if(type != null) {
+			item = new Item(type);
+		} else {
+			item = null;
+		}
+	}
+	
 	/**
 	 * @param space
 	 *            the space to set
@@ -102,4 +156,18 @@ public class Space {
 		// TODO Auto-generated method stub
 		return seen;
 	}
+
+	public void setVisibility(Visibility visited) {
+		// TODO Auto-generated method stub
+		seen = visited;
+	}
+	
+	public int getScent() {
+		return scent;
+	}
+	
+	public void setScent(int num) {
+		scent = num;
+	}
+	
 }
