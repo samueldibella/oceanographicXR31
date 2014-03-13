@@ -26,6 +26,5 @@ public class Shark extends Animus {
 
 	public void move(int direction) {
 		seek();
-		seek();
 	}
 }

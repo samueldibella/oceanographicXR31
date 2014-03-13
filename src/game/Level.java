@@ -3,6 +3,7 @@ import game.enemies.Barricuda;
 import game.enemies.Eel;
 import game.enemies.Jellyfish;
 import game.enemies.Shark;
+import game.enums.InputMode;
 import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
@@ -69,17 +70,22 @@ public class Level extends PApplet{
 		}
 
 		FloorWalker floor = new FloorWalker(heroX, heroY);
+		FloorWalker floor2 = new FloorWalker(heroX, heroY);
 
 		for(int i = 0; i < 200; i++) {
 			//System.out.println(floor.getY() + ", " + floor.getX());
 			design[floor.getY()][floor.getX()].setSpace(SpaceType.EMPTY);
 			floor.move();
+			
+			design[floor2.getY()][floor2.getX()].setSpace(SpaceType.EMPTY);
+			floor2.move();
 			if(floor.getIsFar()) {
 				//	design[floor.getY()][floor.getX()].setSpace(SpaceType.EXIT);
 			}
 		}
 
 		design[floor.getY()][floor.getX()].setSpace(SpaceType.EXIT);
+		design[floor2.getY()][floor2.getX()].setSpace(SpaceType.EXIT);
 
 		assertWalls();
 
@@ -106,7 +112,7 @@ public class Level extends PApplet{
 					} else if(randomGen > (998 - difficulty)) {
 						design[j][i].setItem(ItemType.ECHO);
 					} else if(randomGen > (997 - difficulty)) {
-						design[j][i].setItem(ItemType.HARPOON);
+						design[j][i].setItem(ItemType.ADRL);
 					} else if(randomGen > (996 - difficulty)) {
 						design[j][i].setItem(ItemType.OXYGEN);
 					} else if(randomGen > (995 - difficulty)) {
@@ -231,6 +237,71 @@ public class Level extends PApplet{
 		}
 	}
 
+	public void drill(int direction) {
+		int x = Game.hero.getX();
+		int y = Game.hero.getY();
+		
+		switch(direction) {
+		case 0:
+			break;
+		//up
+		case 1:
+			for(int i = y - 1; i > 0; i--) {
+				if(design[i][x].getSpace() != SpaceType.EXIT){
+					design[i][x].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[i][x].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//right
+		case 2:
+			for(int i = x + 1; i < X_SIZE - 1; i++) {
+				if(design[y][i].getSpace() != SpaceType.EXIT){
+					design[y][i].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[y][i].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//down
+		case 3:
+			for(int i = y + 1; i < Y_SIZE - 1; i++) {
+				if(design[i][x].getSpace() != SpaceType.EXIT){
+					design[i][x].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[i][x].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//left
+		case 4:
+			for(int i = x - 1; i > 0; i--) {
+				if(design[y][i].getSpace() != SpaceType.EXIT){
+					design[y][i].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[y][i].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		default:
+			Game.addBuffer("You don't want to put that there.");
+			break;
+		}
+	}
+	
 	public void echo() {
 		for(int j = 1; j < Y_SIZE; j++) {
 			for(int i = 1; i < X_SIZE; i++) {

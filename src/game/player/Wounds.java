@@ -20,10 +20,10 @@ public class Wounds {
 			
 			hits = temp;
 		}
+		
 		Hit hit = new Hit(type);
 		hits[hitIndex] = hit;
 		hitIndex++;
-		System.out.print(this.toString());
 	}
 	
 	public Hit[] getHits() {

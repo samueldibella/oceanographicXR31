@@ -1,6 +1,7 @@
 package game.player;
 
 import game.Game;
+import game.enums.InputMode;
 import game.enums.ItemType;
 
 public class Inventory {
@@ -12,7 +13,7 @@ public class Inventory {
 		inventory = new Item[22];
 
 		//frequency
-		addItem(ItemType.HARPOON);
+		addItem(ItemType.ADRL);
 		addItem(ItemType.DRILL);
 		addItem(ItemType.OXYGEN);
 		addItem(ItemType.ECHO);
@@ -60,32 +61,47 @@ public class Inventory {
 	public void itemUse(char key) {
 		boolean isThere = false;
 
-		for(int i = 1; i < inventoryIndex; i++) {
-			if(inventory[i].getReferent() == key) {
-
+		for(int i = 0; i < inventoryIndex; i++) {
+			if(inventory[i] != null && inventory[i].getReferent() == key) {
+				
 				switch(inventory[i].getType()) {
 				case DRILL:
-					System.out.println("DRILL");
+					Game.addBuffer("The label says 'point and click'.");
+					Game.inputMode = InputMode.DRILL;
 					break;
-				case HARPOON:
-					System.out.println("HARPOON");
+				case ADRL:
+					Game.addBuffer("The world blurs, and you tense.");
+					Game.inputMode = InputMode.ADRL;
+					Game.druggedTurns = 5;
 					break;
 				case ECHO:
 					Game.dungeon[Game.playerLevel].echo();
+					Game.addBuffer("Water tremor data floods in.");
 					break;
 				case RELAY:
 					int index = Game.hero.getBody().getHitsIndex();
-					Game.hero.getBody().setHits(index, null);
-					Game.hero.getBody().setHitsIndex(index--);
+					for(int l = 0; l < 3; l++) {
+						Game.hero.getBody().setHits(index, null);
+						Game.hero.getBody().setHitsIndex(index--);
+					}
+					
+					Game.addBuffer("Your connection clears.");
 					break;
 				case OXYGEN:
-					Game.hero.hp += 50;
+					if(Game.hero.hp > 50) {
+						Game.hero.hp = 100;
+					} else if (Game.hero.hp > 0) {
+						Game.hero.hp += 50;
+					}
+					
+					Game.addBuffer("You hook up the old cannister.");
 					break;
 				}
 				for(int j = i; j < inventoryIndex; j++) {
 					inventory[j] = inventory[j+1];
 				}
-
+				
+				inventoryIndex--;
 				isThere = true;
 			}
 		}

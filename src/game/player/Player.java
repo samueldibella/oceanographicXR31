@@ -42,7 +42,7 @@ public class Player extends Animus{
 		case 1:
 			if(map[y - 1][x].getSpace() != SpaceType.WALL) {
 				y--;
-				if(chance > 6) {
+				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
@@ -56,7 +56,7 @@ public class Player extends Animus{
 		case 2:
 			if(map[y][x + 1].getSpace() != SpaceType.WALL) {
 				x++;
-				if(chance > 6) {
+				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
@@ -70,7 +70,7 @@ public class Player extends Animus{
 		case 3:
 			if(map[y + 1][x].getSpace() != SpaceType.WALL) {
 				y++;
-				if(chance > 6) {
+				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
@@ -84,7 +84,7 @@ public class Player extends Animus{
 		case 4:
 			if(map[y][x - 1].getSpace() != SpaceType.WALL) {
 				x--;
-				if(chance > 6) {
+				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
@@ -134,7 +134,7 @@ public class Player extends Animus{
 			} else {
 				Game.addBuffer("There's nothing there.");
 			}
-
+			break;
 		}	
 
 		if(hp < 0) {
