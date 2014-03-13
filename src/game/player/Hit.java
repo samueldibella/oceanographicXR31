@@ -9,11 +9,11 @@ public class Hit {
 	int x;
 	int y;
 	SpaceType type;
-	int deviation;
-	int deviationY;
-	int deviationY2;
-	int deviationX;
-	int deviationX2;
+	float deviation;
+	float deviationY;
+	float deviationY2;
+	float deviationX;
+	float deviationX2;
 	
 	Hit(SpaceType type2) {
 		x = Game.screenX;
@@ -21,25 +21,44 @@ public class Hit {
 		
 		switch(type2) {
 		case JELLYFISH:
-			maxRadius = 40;
+			maxRadius = (int) (Math.random() * 40);
 			currentRadius = 1;
-			deviationX = x + ((int) Math.random() * 300) - 150;
-			deviationY = y + ((int) Math.random() * 300) - 150;
-			deviationX2 = x + ((int) Math.random() * 300) - 150;
-			deviationY2 = y + ((int) Math.random() * 300) - 150;
+			deviationX = (int) (Math.random() * 1399);
+			deviationY = (int) (Math.random() * 699);
+			deviationX2 = (int) (Math.random() * 1399);
+			deviationY2 = (int) (Math.random() * 699);
 			break;
 		case EEL:
-			maxRadius = 40;
-			currentRadius = 1;
+			maxRadius = (float) (Math.random() * 2 * (Math.PI));
+			currentRadius = (float) (Math.random() * 2 * (Math.PI));
+			
+			//eclipse coordinates
+			deviationX = (int) (Math.random() * 1399);
+			deviationY = (int) (Math.random() * 699);
+			
+			//eclipse size
+			deviationX2 = (int) (Math.random() * 80);
+			deviationY2 = (int) (Math.random() * 80);
 			break;
+			
 		case SHARK:
-			maxRadius = 70;
+			maxRadius = 100;
 			currentRadius = 1;
 			break;
+			
 		case BARRICUDA:
-			maxRadius = 10;
+			maxRadius = (int) (Math.random());
 			currentRadius = 1;
-			deviation = (int) (Game.hero.getX() + ((Math.random() * 20) - 10));
+			
+			//base delta y for crack growing
+			deviationY = 1;
+			
+			//x deviation of crack
+			deviation = (int) (((Math.random() * 200)));
+			
+			if(maxRadius == 0) {
+				deviation += -1;
+			}
 			break;
 		}
 		
@@ -47,25 +66,25 @@ public class Hit {
 	}
 	
 	//jellyfish only
-	public int getDeviationX() {
+	public float getDeviationX() {
 		return deviationX;
 	}
 	
 	//jellyfish only
-	public int getDeviationY() {
+	public float getDeviationY() {
 		return deviationY;
 	}
 	
-	public int getDeviationX2() {
+	public float getDeviationX2() {
 		return deviationX2;
 	}
 	
 	//jellyfish only
-	public int getDeviationY2() {
+	public float getDeviationY2() {
 		return deviationY2;
 	}
 	
-	public int getDeviation() {
+	public float getDeviation() {
 		return deviation;
 	}
 	
@@ -79,6 +98,10 @@ public class Hit {
 	
 	public float getMax() {
 		return maxRadius;
+	}
+	
+	public void incrementCrack(double d) {
+		deviationY += d;
 	}
 	
 	public void incrementCurrentRadius(double d) {

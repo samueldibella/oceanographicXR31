@@ -55,12 +55,14 @@ public class Wounds {
 	}
 
 	public void bleedOut() {
-		float bleedRate = 1;
+		float bleedRate = (float) Math.random() * 2;
 		float crackRate = 1;
 		
-		for(int i = 0; i < hits.length; i++) {
+		for(int i = 0; i < hitIndex - 1; i++) {
 			if(hits[i].currentRadius < hits[i].getMax()) {
-				hits[i].incrementCurrentRadius( .2 * bleedRate);	
+				hits[i].incrementCurrentRadius( .4 * bleedRate);		
+			} else if(hits[i].getDeviation() < 400) {
+				//hits[i].incrementCrack(.4 * crackRate);
 			}
 		}
 		

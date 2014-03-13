@@ -63,6 +63,7 @@ public class Game extends PApplet {
 	public void draw() {
 		background(0);
 		textFont(f);
+		noStroke();
 		
 		switch(overall) {
 		case GAME:
@@ -125,22 +126,34 @@ public class Game extends PApplet {
 		int index = body.getHitsIndex();
 		
 		for(int i = 0; i < index; i++) {
-			switch(hitList[i].getType()) {
+			Hit hit = hitList[i];
+			
+			switch(hit.getType()) {
 			case JELLYFISH:
-				fill(176,196,222, 90);
-				ellipse(hitList[i].getDeviationX2(), hitList[i].getDeviationY2(),  hitList[i].getCurrentRadius(), hitList[i].getCurrentRadius());
+				fill(176,196,222, 140);
+				ellipse(hit.getDeviationX2(),hit.getDeviationY2(), hit.getCurrentRadius(), hit.getCurrentRadius());
 				
 				//not array coordinates, but rather screen coordinates
-				ellipse(hitList[i].getDeviationX(), hitList[i].getDeviationY(), hitList[i].getCurrentRadius(),hitList[i].getCurrentRadius());
+				ellipse(hit.getDeviationX(), hit.getDeviationY(), hit.getCurrentRadius(),hit.getCurrentRadius());
 				break;
-			case BARRICUDA:
-				break;
+
 			case SHARK:
-				fill(255,0,0);
-				ellipse(hitList[i].getX(), hitList[i].getY(), hitList[i].getCurrentRadius(), hitList[i].getCurrentRadius());
+				fill(255,0,0, 200);
+				ellipse(hit.getX(), hit.getY(), hit.getCurrentRadius(), hit.getCurrentRadius());
 				break;
+			
+			case BARRICUDA:
+				stroke(255);
+				line(hit.getX() - hit.getDeviation(), 0, hit.getX() + hit.getDeviation(), 1400);
+				noStroke();
+				break;	
 				
 			case EEL:
+				stroke(255);
+				noFill();
+				arc(hit.getDeviationX(), hit.getDeviationY(), hit.getDeviationX2(), hit.getDeviationY2(), 
+						0, hit.getCurrentRadius());
+				noStroke();
 					break;
 			default:
 				break;

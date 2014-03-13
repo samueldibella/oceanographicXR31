@@ -222,10 +222,12 @@ public class Level extends PApplet{
 				break;
 			}
 			
-			livingBeings.remove(livingIndex);
-			Game.hero.getBody().addHit(corpus.getType());
-			design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
-
+			if(livingBeings.get(livingIndex).isAlive) {
+				livingBeings.get(livingIndex).setAlive(false);
+				livingBeings.remove(livingIndex);
+				Game.hero.getBody().addHit(corpus.getType());
+				design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
+			}
 		}
 	}
 

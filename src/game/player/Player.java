@@ -137,7 +137,7 @@ public class Player extends Animus{
 
 		}	
 
-		if(hp == 0) {
+		if(hp < 0) {
 			isAlive = false;
 		}
 		
