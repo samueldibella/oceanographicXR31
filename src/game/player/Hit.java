@@ -11,18 +11,22 @@ public class Hit {
 	SpaceType type;
 	int deviation;
 	int deviationY;
+	int deviationY2;
 	int deviationX;
+	int deviationX2;
 	
 	Hit(SpaceType type2) {
-		x = Game.playerLevel;
-		y = 
+		x = Game.screenX;
+		y = Game.screenY;
 		
 		switch(type2) {
 		case JELLYFISH:
 			maxRadius = 40;
 			currentRadius = 1;
-			deviationX = x - ((int) Math.random() * 20) - 10;
-			deviationY = y - ((int) Math.random() * 20) - 10;
+			deviationX = x + ((int) Math.random() * 300) - 150;
+			deviationY = y + ((int) Math.random() * 300) - 150;
+			deviationX2 = x + ((int) Math.random() * 300) - 150;
+			deviationY2 = y + ((int) Math.random() * 300) - 150;
 			break;
 		case EEL:
 			maxRadius = 40;
@@ -52,6 +56,15 @@ public class Hit {
 		return deviationY;
 	}
 	
+	public int getDeviationX2() {
+		return deviationX2;
+	}
+	
+	//jellyfish only
+	public int getDeviationY2() {
+		return deviationY2;
+	}
+	
 	public int getDeviation() {
 		return deviation;
 	}
@@ -62,6 +75,14 @@ public class Hit {
 	
 	public int getY() {
 		return y;
+	}
+	
+	public float getMax() {
+		return maxRadius;
+	}
+	
+	public void incrementCurrentRadius(double d) {
+		currentRadius += d;
 	}
 	
 	public float getCurrentRadius() {

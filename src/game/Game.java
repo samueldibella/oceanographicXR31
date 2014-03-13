@@ -19,8 +19,8 @@ public class Game extends PApplet {
 	int result;
 	int initX;
 	int initY;
-	static int screenX;
-	static int screenY;
+	public static int screenX;
+	public static int screenY;
 	Mode overall;
 	static Queue textBuffer = new Queue();
 	boolean moveEntered; 
@@ -33,6 +33,7 @@ public class Game extends PApplet {
 		frameRate(20);
 		size(1400, 650);
 		background(0);
+		stroke(0);
 		playerTurn = true;
 		moveEntered = false;
 		playerWin = false;
@@ -118,6 +119,7 @@ public class Game extends PApplet {
 	private void hitDisplay() {
 		//sub method for hit overlay
 		Wounds body = hero.getBody();
+		body.bleedOut();
 		
 		Hit[] hitList = body.getHits();
 		int index = body.getHitsIndex();
@@ -125,11 +127,11 @@ public class Game extends PApplet {
 		for(int i = 0; i < index; i++) {
 			switch(hitList[i].getType()) {
 			case JELLYFISH:
-				fill(255);
-				ellipse(0, 0, 120, 120);
+				fill(176,196,222, 90);
+				ellipse(hitList[i].getDeviationX2(), hitList[i].getDeviationY2(),  hitList[i].getCurrentRadius(), hitList[i].getCurrentRadius());
 				
 				//not array coordinates, but rather screen coordinates
-				ellipse(hit.getX() , hit.getY(), 30,30);
+				ellipse(hitList[i].getDeviationX(), hitList[i].getDeviationY(), hitList[i].getCurrentRadius(),hitList[i].getCurrentRadius());
 				break;
 			case BARRICUDA:
 				break;

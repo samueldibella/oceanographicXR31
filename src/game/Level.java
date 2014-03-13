@@ -222,7 +222,6 @@ public class Level extends PApplet{
 				break;
 			}
 			
-			livingBeings.get(livingIndex).setAlive(false);
 			livingBeings.remove(livingIndex);
 			Game.hero.getBody().addHit(corpus.getType());
 			design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
