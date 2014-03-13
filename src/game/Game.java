@@ -1,7 +1,9 @@
 package game;
 import game.enums.Mode;
+import game.enums.Visibility;
 import game.player.Hit;
 import game.player.Player;
+import game.player.Wounds;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -13,13 +15,14 @@ public class Game extends PApplet {
 	PFont fixed = createFont("secrcode.tff", 14);
 	PFont f = createFont("VeraMono", 14);
 	
-	public static Level[] dungeon = new Level[10];
+	public static Level[] dungeon = new Level[25];
 	int result;
 	int initX;
 	int initY;
 	Mode overall;
+	static Queue textBuffer = new Queue();
 	boolean moveEntered; 
-	boolean playerWin;
+	static boolean playerWin;
 	static boolean playerTurn;
 	public static Player hero;
 	public static int playerLevel;
@@ -38,6 +41,7 @@ public class Game extends PApplet {
 		hero = new Player(initX, initY);
 		dungeon[0] = new Level(10, initX, initY, 0);
 		dungeon[0].updateVisibility();
+		addBuffer("It's dark down here...");
 		
 		/*raycast test
 		dungeon[0].getDesign()[10][6].setSpace(SpaceType.AIM);
@@ -65,9 +69,7 @@ public class Game extends PApplet {
 				dungeon[hero.getCurrentLevel()].updateVisibility();
 				moveEntered = false;
 			} else if(playerTurn == false){
-			//	System.out.print("trigger");
-				dungeon[hero.getCurrentLevel()].monsterMove();
-				
+				dungeon[hero.getCurrentLevel()].monsterMove();				
 			}
 			
 			result = 0;
@@ -96,13 +98,18 @@ public class Game extends PApplet {
 	}
 	
 	public void loseScreen() {
-		
+		textAlign(CENTER);
+		fill(70, 111, 65);
+		text("YOU LOSE", 700, 350);
+		textAlign(LEFT);
 	}
 	
 	private void hitDisplay() {
 		// TODO Auto-generated method stub
-		Hit[] hitList = hero.getHits();
-		int index = hero.getHitsIndex();
+		Wounds body = hero.getBody();
+		
+		Hit[] hitList = body.getHits();
+		int index = body.getHitsIndex();
 		
 		for(int i = 0; i <= index; i++) {
 			switch(hitList[i].getType()) {
@@ -137,9 +144,9 @@ public class Game extends PApplet {
 		
 		//basic text information
 		text(hero.vitals(), 10, 20);
-		text(hero.inventory(), 10, 150);
+		text(hero.getInventory().toString(), 10, 150);
 		text("Oceanographic Expedition X R31", 575, 20);
-		text(hero.textBuffer(), 1200, 20);
+		text(buffer(), 1200, 20);
 		
 		textFont(fixed);
 		text(localRadar(), 1200, 415);
@@ -192,7 +199,7 @@ public class Game extends PApplet {
 				if(j == hero.getY() && i == hero.getX()) {
 					fill(255,193,37);
 					text(hero.toString(), baseX, baseY);
-				} else if(display[j][i].getItem() != null){
+				} else if (display[j][i].getItem() != null){
 					fill(255,0,0,opacity);
 					text(display[j][i].toString(), baseX, baseY);	
 				} else {
@@ -204,6 +211,23 @@ public class Game extends PApplet {
 
 			baseY += 15;
 			baseX = 150;
+		}
+	}
+
+	private String buffer() {
+		// TODO Auto-generated method stub
+		String output = "     Environmental Factors\n";
+		output += "--------------------------------------\n";
+		output += textBuffer;
+			
+		return output;
+	}
+	
+	public static void addBuffer(String text) {
+		textBuffer.enqueue(text);
+		
+		if(textBuffer.getIndex() > 13) {
+			textBuffer.dequeue();
 		}
 	}
 
@@ -240,7 +264,7 @@ public class Game extends PApplet {
 			moveEntered = true;
 			break;
 		default:
-			Game.hero.itemUse(key);
+			hero.getInventory().itemUse(key);
 			break;
 		}
 		
@@ -276,18 +300,19 @@ public class Game extends PApplet {
 	}
 
 	public String localRadar() {
-		String radar = "    Local Radar\n";
+		String radar = "    Local Sonar\n";
 		radar += "X X X X X\n";
+		Level level = Game.dungeon[playerLevel]; 
 		
 		for(int j = -3; j <= 3; j++) {
 			radar += "X ";
 			
 			for(int i = -3; i <= 3; i++) {
-				if(Game.dungeon[playerLevel].isInLevel(hero.getX() + i, hero.getY() + j)) {
+				if(level.isInLevel(hero.getX() + i, hero.getY() + j)) {
 					if(j == 0 && i == 0) {
 						radar += "@ ";
 					} else {
-						radar += Game.dungeon[playerLevel].getDesign()[hero.getY() + j][hero.getX() + i].toString() + " ";
+						radar += level.getDesign()[hero.getY() + j][hero.getX() + i].trueSee() + " ";
 					}
 				} else {
 					radar += "X ";
@@ -300,6 +325,10 @@ public class Game extends PApplet {
 		radar += "X X X X X";
 		
 		return radar;
+	}
+	
+	public static void setPlayerWin(boolean input) {
+		playerWin = input;
 	}
 	
 	public static void setPlayerTurn(boolean input) {

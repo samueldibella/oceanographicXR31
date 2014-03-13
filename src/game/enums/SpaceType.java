@@ -10,6 +10,7 @@ public enum SpaceType {
 	HERO('@'),
 	WALL('#'),
 	EXIT('>'),
+	SHOCK('+'),
 	JELLYFISH('u'),
 	BARRICUDA('B'),
 	EEL('e'),

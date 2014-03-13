@@ -13,6 +13,16 @@ public class Item {
 		type = reference.getType();
 	}
 	
+	public Item(Item reference, char r) {
+		referent = r;
+		type = reference.getType();
+	}
+	
+	public Item(ItemType choice, char r) {
+		referent = r;
+		type = choice;
+	}
+	
 	public Item(ItemType choice) {
 		referent = ' ';
 		type = choice;

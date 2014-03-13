@@ -11,7 +11,7 @@ public class Shark extends Animus {
 	boolean isAlive;
 	boolean playerSighted;
 	int currentLevel;
-
+	
 	public Shark(int initX, int initY) {
 		//currentLevel = Game.hero.getCurrentLevel();
 		x = initX;
@@ -25,13 +25,11 @@ public class Shark extends Animus {
 
 	public void move(int direction) {
 		if(Game.getLevel(currentLevel).getDesign()[y][x].getVisibility() == Visibility.INSIGHT)	{
-			//playerSighted = true;
+			playerSighted = true;
 		} 
 		
 		if(playerSighted) {
 			seek();
-		} else {
-			wander(type);
 		}
 	}
 }

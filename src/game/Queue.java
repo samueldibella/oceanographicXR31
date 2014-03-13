@@ -7,27 +7,27 @@ import java.util.ArrayList;
  */
 public class Queue {
 	//index is queue's last element
-	private ArrayList<Space> queue;
+	private ArrayList<String> queue;
 	private boolean isEmpty;
 	private int index;
 	
 	/**Class Constructor
 	 */
 	public Queue() {
-		queue = new ArrayList<Space>();
+		queue = new ArrayList<String>();
 		setEmpty(true);
 		index = -1;
 	}
 	
-	void enqueue(Space input) {
+	void enqueue(String input) {
 		setEmpty(false);
-		queue.ensureCapacity(4);
+		queue.ensureCapacity(1);
 		index++;
 		queue.add(input);
 	}
 	
-	Space dequeue() {
-		Space output = queue.get(0);
+	String dequeue() {
+		String output = queue.get(0);
 		queue.remove(0);
 		
 		index--;
@@ -38,7 +38,7 @@ public class Queue {
 		return output;
 	}
 	
-	Space peak() {
+	String peak() {
 		return queue.get(0); 
 	}
 
@@ -55,12 +55,15 @@ public class Queue {
 	
 	@Override
 	public String toString() {
-		String output = "{";
-		for(int i = 0; i < index; i++) {
-			output += "X" + queue.get(i).getX() + "Y" + queue.get(i).getY();
-			output += "'" + queue.get(i) + "'\\";
+		String output = "";
+		for(int i = index; i > -1; i--) {
+			output += queue.get(i) + "\n";
 		}
 		
 		return output;
+	}
+	
+	public int getIndex() {
+		return index;
 	}
 }

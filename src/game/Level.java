@@ -81,7 +81,7 @@ public class Level extends PApplet{
 
 		assertWalls();
 
-		
+
 		for(int j = 0; j < Y_SIZE; j++) {
 			for(int i = 0; i < X_SIZE; i++) {
 				if(design[j][i].getSpace() == SpaceType.EMPTY) {
@@ -157,16 +157,35 @@ public class Level extends PApplet{
 	//orders all enemies on level to execute their move
 	//manages monster overlap and death with player hits
 	void monsterMove() {
-		for(int i = 0; i < livingBeings.size(); i++) {
-			//if(livingBeings.get(i).getAlive()) {	
-			int chance = (int) (Math.random() * 9);
-			livingBeings.get(i).move(chance);
-			//}
+		updateScent();
 
-			if(livingBeings.get(i).getX() == Game.hero.getX() && (livingBeings.get(i).getY() == Game.hero.getY())) {
+		for(int i = 0; i < livingBeings.size(); i++) {
+			int chance = (int) (Math.random() * 9);
+			Animus corpus = livingBeings.get(i);
+			corpus.move(chance);
+
+			if(corpus.getX() == Game.hero.getX() && (corpus.getY() == Game.hero.getY())) {
+				switch (corpus.getType()) {
+				case JELLYFISH:
+					Game.addBuffer("Your visor smears with jelly.");
+					break;
+				case EEL:
+					Game.addBuffer("You crush the eel.");
+					Eel.normalize(corpus.getX(), corpus.getY());
+					break;
+				case BARRICUDA:
+					Game.addBuffer("Teeth trying to tear the suit.");
+					break;
+				case SHARK:
+					Game.addBuffer("A brief near-death struggle.");
+					break;
+				default:
+					break;
+				}
+				
 				livingBeings.get(i).setAlive(false);
-				Game.hero.addHit(livingBeings.get(i).getType());
-				design[livingBeings.get(i).getY()][livingBeings.get(i).getX()].setSpace(SpaceType.EMPTY);
+				Game.hero.getBody().addHit(corpus.getType());
+				design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
 
 			}
 
@@ -175,6 +194,26 @@ public class Level extends PApplet{
 		Game.setPlayerTurn(true);
 	}
 
+	void updateScent() {
+		int x = Game.hero.getX();
+		int y = Game.hero.getY();
+
+		for(int j = 0; j < Y_SIZE - 1; j++) {
+			for(int i = 0; i < X_SIZE - 1; i++) {
+				if(design[j][i].getSpace() == SpaceType.WALL) {
+					design[j][i].setScent(0);
+				}
+				if(design[j][i].getScent() > 0) {
+					design[j][i].setScent(design[j][i].getScent() - 5);
+				} 
+			}
+		}
+
+		design[y][x].instillScent(400);
+	}
+
+
+
 	public void echo() {
 		for(int j = 1; j < Y_SIZE; j++) {
 			for(int i = 1; i < X_SIZE; i++) {
@@ -182,12 +221,12 @@ public class Level extends PApplet{
 			}
 		}
 	}
-	
+
 	//TODO update so that fish movement isn't recorded
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		
+
 		for(int j = 0; j < Level.Y_SIZE; j++) {
 			for(int i = 0; i < Level.X_SIZE; i++) {
 				if(design[j][i].getVisibility() == Visibility.INSIGHT) {
@@ -195,24 +234,24 @@ public class Level extends PApplet{
 				}
 			}
 		}
-		
+
 		/* for the dream of real raycasting
 		for(int i = 0; i < X_SIZE - 1; i++) {
 			visionRayCast(x,y,i, 0);
 		}
-		
+
 		for(int i = 0; i < X_SIZE - 1; i++) {
 			visionRayCast(x,y,i, Y_SIZE - 1);
 		}
-		
+
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			visionRayCast(x,y,0,j);
 		}
-		
+
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			visionRayCast(x,y,Y_SIZE - 1,j);
 		}*/
-		
+
 		//leftwards fauxcast
 		for(int j = - 1; j <= 1; j++) {
 			for(int i = x; i > x - 10; i--) {
@@ -221,36 +260,36 @@ public class Level extends PApplet{
 					break;
 				}
 			}
-			
+
 		}
-		
-		
+
+
 		//to the right
 		visionRayCast(x, y, x + 10 , y - 1);
 		visionRayCast(x, y, x + 11 , y);
 		visionRayCast(x, y, x + 10, y + 1);
-		
+
 		//to the left
 		//visionRayCast(x, y, x - 10, y - 1);
 		//visionRayCast(x, y, x - 10, y);
 		//visionRayCast(x, y, x - 10, y + 1);
-		
+
 		//down
 		visionRayCast(x - 1, y, x - 1, y + 10);
 		visionRayCast(x, y, x, y + 11);
 		visionRayCast(x + 1, y, x + 1, y + 10);
-		
+
 		//up
 		visionRayCast(x - 1, y, x - 1, y - 10);
 		visionRayCast(x, y, x, y - 11);
 		visionRayCast(x + 1, y, x + 1, y - 10);
-		
+
 		//diagonals 
 		visionRayCast(x, y, x + 3, y - 3);
 		visionRayCast(x, y, x + 3, y + 3);
 		visionRayCast(x, y, x - 3, y + 3);
 		visionRayCast(x, y, x - 3, y - 3); 
-			
+
 	}
 
 	//attempt to tell if space between two points is totally empty
@@ -276,11 +315,11 @@ public class Level extends PApplet{
 				y2--;
 			}
 		} 
-		
+
 		//vertical lines
 		if(x2 - x2 == 0) {
 			int deltaY = y2 - y1;
-			
+
 			//upward
 			if(deltaY > 0) {
 				for(int i = y1; i < y2; i++ ) {
@@ -289,8 +328,8 @@ public class Level extends PApplet{
 						break;
 					}
 				}
-			
-			//downwards
+
+				//downwards
 			} else if(deltaY < 0) {
 				for(int i = y1; i > y2; i--) {
 					design[i][x1].setVisibility(Visibility.INSIGHT);
@@ -300,7 +339,7 @@ public class Level extends PApplet{
 				}
 			}
 		}
-		
+
 		float error = 0;
 		int temp;
 		int yStep;
@@ -373,110 +412,108 @@ public class Level extends PApplet{
 			}
 		}
 	}
-	
-public boolean isInLevel(int x, int y) {
-	if(y < 0 || y > Y_SIZE - 1) {
-		return false;
+
+	public boolean isInLevel(int x, int y) {
+		if(y < 0 || y > Y_SIZE - 1) {
+			return false;
+		}
+
+		if(x < 0 || x > X_SIZE - 1) {
+			return false;
+		}
+
+		return true;
 	}
-	
-	if(x < 0 || x > X_SIZE - 1) {
-		return false;
-	}
-	
-	return true;
-}
 
-//total empty spaces next to passed space
-public int localEmpty(Space p) {
-	int emptySpaces = 0;
-	int yScale;
-	int xScale;
+	//total empty spaces next to passed space
+	public int localEmpty(Space p) {
+		int emptySpaces = 0;
+		int yScale;
+		int xScale;
 
-	for(int j = -1; j < 2; j++) {
-		for(int i = -1; i < 2; i++) {
-			yScale = p.getY() + j;
-			xScale = p.getX() + i;
+		for(int j = -1; j < 2; j++) {
+			for(int i = -1; i < 2; i++) {
+				yScale = p.getY() + j;
+				xScale = p.getX() + i;
 
-			if(0 < yScale && yScale < Y_SIZE && 0 < xScale && xScale < X_SIZE) {
-				if(design[p.getY() + j][p.getX() + i].getSpace() == SpaceType.EMPTY) {
-					emptySpaces++;
+				if(0 < yScale && yScale < Y_SIZE && 0 < xScale && xScale < X_SIZE) {
+					if(design[p.getY() + j][p.getX() + i].getSpace() == SpaceType.EMPTY) {
+						emptySpaces++;
+					}
 				}
+
 			}
+		}
+
+		return emptySpaces;
+	}
+
+	/**Checks a points neighbors for ones of type EMPTY
+	 * and returns a list of them.
+	 * @param p reference point
+	 * @return list of empty neighbor spaces
+	 */
+	public Space[] checkNeighbors(Space p) {
+		Space[] emptyPoints = new Space[4];
+
+		// check top space
+		if (design[p.getY() - 1][p.getX()].getSpace() == SpaceType.EMPTY ||
+				design[p.getY() - 1][p.getX()].getSpace() == SpaceType.EXIT) {
+			emptyPoints[0] = design[p.getY() - 1][p.getX()];
+		}
+
+		// check left space
+		if (design[p.getY()][p.getX() - 1].getSpace() == SpaceType.EMPTY ||
+				design[p.getY()][p.getX() - 1].getSpace() == SpaceType.EXIT) {
+			emptyPoints[3] = design[p.getY()][p.getX() - 1];
 
 		}
-	}
-
-	return emptySpaces;
-}
-
-/**Checks a points neighbors for ones of type EMPTY
- * and returns a list of them.
- * @param p reference point
- * @return list of empty neighbor spaces
- */
-public Space[] checkNeighbors(Space p) {
-	Space[] emptyPoints = new Space[4];
-
-	// check top space
-	if (design[p.getY() - 1][p.getX()].getSpace() == SpaceType.EMPTY ||
-			design[p.getY() - 1][p.getX()].getSpace() == SpaceType.EXIT) {
-		emptyPoints[0] = design[p.getY() - 1][p.getX()];
-	}
-
-	// check right space
-	if (design[p.getY()][p.getX() + 1].getSpace() == SpaceType.EMPTY ||
-			design[p.getY()][p.getX() + 1].getSpace() == SpaceType.EXIT) {
-		emptyPoints[1] = design[p.getY()][p.getX() + 1];
-	}
-
-	// check bottom space
-	if (design[p.getY() + 1][p.getX()].getSpace() == SpaceType.EMPTY ||
-			design[p.getY() + 1][p.getX()].getSpace() == SpaceType.EXIT) {
-		emptyPoints[2] = design[p.getY() + 1][p.getX()];
-	}
-
-	// check left space
-	if (design[p.getY()][p.getX() - 1].getSpace() == SpaceType.EMPTY ||
-			design[p.getY()][p.getX() - 1].getSpace() == SpaceType.EXIT) {
-		emptyPoints[3] = design[p.getY()][p.getX() - 1];
-
-	}
-
-	return emptyPoints;
-}
-
-/**
- * Displays a printing of the 2D char array that represents the maze
- */
-@Override
-public String toString() {
-	String output = "";
-	//output += " Turn: " + Game.getTurn() + " \n";
-	output += "Hero Co-Ordinates: " + heroX + ", " + heroY + "\n";
-	for (int j = 0; j < Y_SIZE - 1; j++) {
-		for (int i = 0; i < X_SIZE; i++) {
-			output += design[j][i] + " ";
+		
+		// check bottom space
+		if (design[p.getY() + 1][p.getX()].getSpace() == SpaceType.EMPTY ||
+				design[p.getY() + 1][p.getX()].getSpace() == SpaceType.EXIT) {
+			emptyPoints[2] = design[p.getY() + 1][p.getX()];
 		}
+
+		// check right space
+		if (design[p.getY()][p.getX() + 1].getSpace() == SpaceType.EMPTY ||
+				design[p.getY()][p.getX() + 1].getSpace() == SpaceType.EXIT) {
+			emptyPoints[1] = design[p.getY()][p.getX() + 1];
+		}
+
+		return emptyPoints;
+	}
+
+
+	@Override
+	public String toString() {
+		String output = "";
+		//output += " Turn: " + Game.getTurn() + " \n";
+		output += "Hero Co-Ordinates: " + heroX + ", " + heroY + "\n";
+		for (int j = 0; j < Y_SIZE - 1; j++) {
+			for (int i = 0; i < X_SIZE; i++) {
+				output += design[j][i] + " ";
+			}
+			output += "\n";
+		}
+
 		output += "\n";
+		return output;
 	}
 
-	output += "\n";
-	return output;
-}
+	public ArrayList<Animus> getBeings() {
+		return livingBeings;
+	}
 
-public ArrayList<Animus> getBeings() {
-	return livingBeings;
-}
+	public Space[][] getDesign() {
+		return design;
+	}
 
-public Space[][] getDesign() {
-	return design;
-}
+	public int getHeroX() {
+		return heroX;
+	}
 
-public int getHeroX() {
-	return heroX;
-}
-
-public int getHeroY() {
-	return heroY;
-}
+	public int getHeroY() {
+		return heroY;
+	}
 }
