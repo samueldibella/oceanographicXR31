@@ -37,28 +37,28 @@ public class Player extends Animus{
 					break;
 				//move right
 				case 1:
-					if(Game.getDungeon()[currentLevel].getDesign()[y - 1][x].isEmpty()) {
+					if(Game.getDungeon()[currentLevel].getDesign()[y - 1][x].getSpace() != SpaceType.WALL) {
 						y--;
 						hp--;
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 2:
-					if(Game.getDungeon()[currentLevel].getDesign()[y][x + 1].isEmpty()) {
+					if(Game.getDungeon()[currentLevel].getDesign()[y][x + 1].getSpace() != SpaceType.WALL) {
 						x++;
 						hp--;
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 3:
-					if(Game.getDungeon()[currentLevel].getDesign()[y + 1][x].isEmpty()) {
+					if(Game.getDungeon()[currentLevel].getDesign()[y + 1][x].getSpace() != SpaceType.WALL) {
 						y++;
 						hp--;
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 4:
-					if(Game.getDungeon()[currentLevel].getDesign()[y][x - 1].isEmpty()) {
+					if(Game.getDungeon()[currentLevel].getDesign()[y][x - 1].getSpace() != SpaceType.WALL) {
 						x--;
 						hp--;
 						Game.setPlayerTurn(false); 
@@ -82,9 +82,9 @@ public class Player extends Animus{
 		}
 	
 	public String inventory() {
-		String output = "Inventory\n";
+		String output = "\tInventory\n";
 		for(int i = 0; i < inventoryIndex; i++) {
-			output += inventory[i].referent + ". " + inventory[i];
+			output += inventory[i].referent + ". " + inventory[i].getType() + " " + inventory[i];
 		}
 		return output;
 	}
@@ -102,11 +102,42 @@ public class Player extends Animus{
 		return isAlive;
 	}
 	
-	public void addItem(ItemType item) {
+	public Item referentFetch(char fetch) {
+		for(int i = 0; i < inventoryIndex; i++) {
+			if(inventory[inventoryIndex].referent == fetch) {
+				return inventory[inventoryIndex];
+			}
+		}
 		
+		return null;
 	}
 	
-	public void addHit(Hit hit) {
+	public void addItem(ItemType item) {
+		char toBe = (char) ((Math.random() * 25) + 97);
+		char[] referents = new char[inventoryIndex];
+		boolean referenceClear;
+		
+		//checks to make sure that 
+		if(inventoryIndex < 25) {
+			inventory[inventoryIndex] = Game.getLevel(currentLevel).getDesign()[y][x].getItem();
+			referenceClear = true;
+			do {
+				if(referentFetch(toBe) != null || toBe == 'w' || toBe == 'a' 
+											   || toBe == 's' || toBe == 'd') {
+					referenceClear = false;
+					toBe = (char) ((Math.random() * 25) + 97);
+				}
+			} while(!referenceClear); 
+			inventory[inventoryIndex].setReferent(toBe);
+			inventoryIndex++;
+		} else {
+			//print to string buffer about inventory full
+		}
+
+	}
+	
+	public void addHit(SpaceType type) {
+		Hit hit = new Hit(type);
 		hits[hitIndex] = hit;
 	}
 	

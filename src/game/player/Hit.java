@@ -1,19 +1,19 @@
 package game.player;
 
 import game.Game;
-import game.enums.HitType;
+import game.enums.SpaceType;
 
 public class Hit {
 	int radius;
 	int x;
 	int y;
-	HitType type;
+	SpaceType type;
 	int deviation;
 	int deviationY;
 	int deviationX;
 	
-	Hit(HitType enemy) {
-		switch(enemy) {
+	Hit(SpaceType type2) {
+		switch(type2) {
 		case JELLYFISH:
 			radius = 4;
 			deviationX = x - ((int) Math.random() * 6) - 3;
@@ -30,7 +30,7 @@ public class Hit {
 			break;
 		}
 		
-		type = enemy;
+		type = type2;
 	}
 	
 	//jellyfish only
@@ -59,7 +59,7 @@ public class Hit {
 		return radius;
 	}
 	
-	public HitType getType() {
+	public SpaceType getType() {
 		return type;
 	}
 }

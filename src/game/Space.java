@@ -1,5 +1,6 @@
 package game;
 
+import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
 import game.player.Item;
@@ -36,7 +37,15 @@ public class Space {
 		this.y = y;
 		this.level = cL;
 		this.setSpace(s);
-		this.seen = Visibility.INSIGHT;
+		this.seen = Visibility.UNVISITED;
+	}
+	
+	Space(SpaceType s, int x, int y, int cL, Visibility vision) {
+		this.x = x;
+		this.y = y;
+		this.level = cL;
+		this.setSpace(s);
+		this.seen = vision;
 	}
 
 	public boolean isEmpty() {
@@ -90,6 +99,15 @@ public class Space {
 		return y;
 	}
 
+	public Item getItem() {
+		return item;
+	}
+	
+	//implement better version
+	public void setItem(ItemType type) {
+		item = new Item(type);
+	}
+	
 	/**
 	 * @param space
 	 *            the space to set
@@ -101,5 +119,10 @@ public class Space {
 	public Visibility getVisibility() {
 		// TODO Auto-generated method stub
 		return seen;
+	}
+
+	public void setVisibility(Visibility visited) {
+		// TODO Auto-generated method stub
+		seen = visited;
 	}
 }

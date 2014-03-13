@@ -1,5 +1,6 @@
 package game;
 import game.enums.SpaceType;
+import game.enums.Visibility;
 import game.player.Hit;
 import game.player.Player;
 import processing.core.PApplet;
@@ -13,11 +14,10 @@ public class Game extends PApplet {
 	int result;
 	int initX;
 	int initY;
-	public static Player hero;
-	static boolean playerTurn;
-	public static int playerLevel;
 	boolean moveEntered; 
-	
+	static boolean playerTurn;
+	public static Player hero;
+	public static int playerLevel;
 	
 	public void setup() {
 		frameRate(20);
@@ -30,7 +30,7 @@ public class Game extends PApplet {
 		initY = (int) (Math.random() * Level.Y_SIZE - 2) + 1;
 		hero = new Player(initX, initY);
 		dungeon[0] = new Level(10, initX, initY, 0);
-		
+		dungeon[0].updateVisibility();
 		
 		/*raycast test
 		dungeon[0].getDesign()[10][6].setSpace(SpaceType.AIM);
@@ -52,14 +52,16 @@ public class Game extends PApplet {
 		//while(hero.getAlive() == true) {
 			if(playerTurn == true && moveEntered == true) {
 				hero.move(result);
+				dungeon[hero.getCurrentLevel()].updateVisibility();
 				moveEntered = false;
 			} else if(playerTurn == false){
 			//	System.out.print("trigger");
 				dungeon[hero.getCurrentLevel()].monsterMove();
+				
 			}
 			
 			pDisplay(dungeon[hero.getCurrentLevel()]);
-			hitDisplay();
+			//hitDisplay();
 			result = 0;
 	//	}
 		
@@ -86,11 +88,16 @@ public class Game extends PApplet {
 				break;
 			case BARRICUDA:
 				break;
+			default:
+				break;
 			
 			}
 		}
 	}
 
+	
+	
+	
 	private void pDisplay(Level level) {
 		Space[][] display = level.getDesign();
 		textFont(f);
@@ -101,7 +108,8 @@ public class Game extends PApplet {
 		
 		//basic text information
 		text(hero.vitals(), 10, 20);
-		text(hero.inventory(), 1275, 20);
+		text(hero.inventory(), 10, 150);
+		//text(hero.textBuffer(), 1250, 10);
 		text("Oceanographic Expedition XR31", 575, 20);
 		
 		//display all level tiles
@@ -128,6 +136,12 @@ public class Game extends PApplet {
 				case EXIT:
 					fill(255,215,0, opacity);
 					break;
+				case EMPTY:
+					fill(255, opacity);
+					break;
+				case BARRICUDA:
+					fill(176,100,65, opacity);
+					break;
 				case JELLYFISH:
 					fill(176,196,222, opacity);
 					break;
@@ -142,6 +156,9 @@ public class Game extends PApplet {
 				if(j == hero.getY() && i == hero.getX()) {
 					fill(255,193,37);
 					text(hero.toString(), baseX, baseY);
+				} else if(display[j][i].getItem() != null){
+					fill(255,0,0,opacity);
+					text(display[j][i].toString(), baseX, baseY);	
 				} else {
 					text(display[j][i].toString(), baseX, baseY);	
 				}
