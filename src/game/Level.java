@@ -85,29 +85,29 @@ public class Level extends PApplet{
 		for(int j = 0; j < Y_SIZE; j++) {
 			for(int i = 0; i < X_SIZE; i++) {
 				if(design[j][i].getSpace() == SpaceType.EMPTY) {
-					int randomGen = (int) (Math.random() * 400) - difficulty;
+					int randomGen = (int) (Math.random() * 1000) - difficulty;
 
-					if(randomGen < 6) {
+					if(randomGen < 50) {
 						livingBeings.add(new Jellyfish(i, j));
 						design[j][i].setSpace(SpaceType.JELLYFISH);
-					} else if(randomGen < 12) {
+					} else if(randomGen < 60) {
 						livingBeings.add(new Eel(i, j));
 						design[j][i].setSpace(SpaceType.EEL);
-					} else if(randomGen < 14) {
+					} else if(randomGen < 65) {
 						livingBeings.add(new Barricuda(i,j));
 						design[j][i].setSpace(SpaceType.BARRICUDA);
-					} else if(randomGen < 16) {
+					} else if(randomGen < 70) {
 						livingBeings.add(new Shark(i,j));
 						design[j][i].setSpace(SpaceType.SHARK);
-					} else if(randomGen > (399 - difficulty)) {
+					} else if(randomGen > (999 - difficulty)) {
 						design[j][i].setItem(ItemType.DRILL);
-					} else if(randomGen > (398 - difficulty)) {
+					} else if(randomGen > (998 - difficulty)) {
 						design[j][i].setItem(ItemType.ECHO);
-					} else if(randomGen > (397 - difficulty)) {
+					} else if(randomGen > (997 - difficulty)) {
 						design[j][i].setItem(ItemType.HARPOON);
-					} else if(randomGen > (396 - difficulty)) {
+					} else if(randomGen > (996 - difficulty)) {
 						design[j][i].setItem(ItemType.OXYGEN);
-					} else if(randomGen > (395 - difficulty)) {
+					} else if(randomGen > (995 - difficulty)) {
 						design[j][i].setItem(ItemType.RELAY);
 					}
 				}
@@ -175,6 +175,14 @@ public class Level extends PApplet{
 		Game.setPlayerTurn(true);
 	}
 
+	public void echo() {
+		for(int j = 1; j < Y_SIZE; j++) {
+			for(int i = 1; i < X_SIZE; i++) {
+				design[j][i].setVisibility(Visibility.VISITED);
+			}
+		}
+	}
+	
 	//TODO update so that fish movement isn't recorded
 	public void updateVisibility() {
 		int x = Game.hero.getX();
@@ -188,35 +196,60 @@ public class Level extends PApplet{
 			}
 		}
 		
-		//visionRayCast(x, y, x - 3, y - 5);
+		/* for the dream of real raycasting
+		for(int i = 0; i < X_SIZE - 1; i++) {
+			visionRayCast(x,y,i, 0);
+		}
+		
+		for(int i = 0; i < X_SIZE - 1; i++) {
+			visionRayCast(x,y,i, Y_SIZE - 1);
+		}
+		
+		for(int j = 0; j < Y_SIZE - 1; j++) {
+			visionRayCast(x,y,0,j);
+		}
+		
+		for(int j = 0; j < Y_SIZE - 1; j++) {
+			visionRayCast(x,y,Y_SIZE - 1,j);
+		}*/
+		
+		//leftwards fauxcast
+		for(int j = - 1; j <= 1; j++) {
+			for(int i = x; i > x - 10; i--) {
+				design[y + j][i].setVisibility(Visibility.INSIGHT);
+				if(design[y + j][i].getSpace() == SpaceType.WALL) {
+					break;
+				}
+			}
+			
+		}
+		
 		
 		//to the right
-		visionRayCast(x, y, X_SIZE , y - 1);
-		visionRayCast(x, y, X_SIZE , y);
-		visionRayCast(x, y, X_SIZE, y + 1);
+		visionRayCast(x, y, x + 10 , y - 1);
+		visionRayCast(x, y, x + 11 , y);
+		visionRayCast(x, y, x + 10, y + 1);
 		
 		//to the left
-		visionRayCast(x, y, 0, y - 1);
-		visionRayCast(x, y, 0, y);
-		visionRayCast(x, y, 0, y + 1);
+		//visionRayCast(x, y, x - 10, y - 1);
+		//visionRayCast(x, y, x - 10, y);
+		//visionRayCast(x, y, x - 10, y + 1);
 		
 		//down
-		visionRayCast(x - 1, y, x - 1, Y_SIZE - 1);
-		visionRayCast(x, y, x, Y_SIZE - 1);
-		visionRayCast(x + 1, y, x + 1, Y_SIZE - 1);
+		visionRayCast(x - 1, y, x - 1, y + 10);
+		visionRayCast(x, y, x, y + 11);
+		visionRayCast(x + 1, y, x + 1, y + 10);
 		
 		//up
-		visionRayCast(x - 1, y, x - 1, 0);
-		visionRayCast(x, y, x, 0);
-		visionRayCast(x + 1, y, x + 1, 0);
+		visionRayCast(x - 1, y, x - 1, y - 10);
+		visionRayCast(x, y, x, y - 11);
+		visionRayCast(x + 1, y, x + 1, y - 10);
 		
 		//diagonals 
-		/*
 		visionRayCast(x, y, x + 3, y - 3);
 		visionRayCast(x, y, x + 3, y + 3);
 		visionRayCast(x, y, x - 3, y + 3);
-		visionRayCast(x, y, x - 3, y - 3);
-		*/
+		visionRayCast(x, y, x - 3, y - 3); 
 			
 	}
 

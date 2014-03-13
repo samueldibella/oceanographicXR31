@@ -79,7 +79,7 @@ public class Space {
 					return Game.getLevel(level).getBeings().get(i).toString();
 				}
 			}
-		} else  if (item != null) {
+		} else if (item != null) {
 			return item.toString();
 		} 
 		
@@ -105,7 +105,11 @@ public class Space {
 	
 	//implement better version
 	public void setItem(ItemType type) {
-		item = new Item(type);
+		if(type != null) {
+			item = new Item(type);
+		} else {
+			item = null;
+		}
 	}
 	
 	/**

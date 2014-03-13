@@ -17,7 +17,7 @@ public class Player extends Animus{
 		speed = 50;
 		dmg = 20;
 		currentLevel = 0;
-		inventory = new Item[26];
+		inventory = new Item[18];
 		inventoryIndex = 0;
 		aspect = SpaceType.HERO;
 		x = xCo;
@@ -26,12 +26,19 @@ public class Player extends Animus{
 		hits = new Hit[20];
 		hitIndex = 0;
 		
+		//frequency
+		addItem(ItemType.HARPOON);
+		addItem(ItemType.DRILL);
+		addItem(ItemType.OXYGEN);
+		addItem(ItemType.ECHO);
+		addItem(ItemType.RELAY);
+		
 	}
 	
 	@Override
 	public void move(int direction) {
-		//	Space[] empty = Dungeon.getLevels()[currentLevel].design.checkNeigbors(space);
-		//probs way too inefficient
+		int chance = (int) (Math.random() * 9);
+		
 			switch(direction) {
 				case 0:
 					break;
@@ -39,28 +46,36 @@ public class Player extends Animus{
 				case 1:
 					if(Game.getDungeon()[currentLevel].getDesign()[y - 1][x].getSpace() != SpaceType.WALL) {
 						y--;
-						hp--;
+						if(chance < 6) {
+							hp--;
+						}
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 2:
 					if(Game.getDungeon()[currentLevel].getDesign()[y][x + 1].getSpace() != SpaceType.WALL) {
 						x++;
-						hp--;
+						if(chance < 6) {
+							hp--;
+						}
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 3:
 					if(Game.getDungeon()[currentLevel].getDesign()[y + 1][x].getSpace() != SpaceType.WALL) {
 						y++;
-						hp--;
+						if(chance < 4) {
+							hp--;
+						}
 						Game.setPlayerTurn(false); 
 					}
 					break;
 				case 4:
 					if(Game.getDungeon()[currentLevel].getDesign()[y][x - 1].getSpace() != SpaceType.WALL) {
 						x--;
-						hp--;
+						if(chance < 6) {
+							hp--;
+						}
 						Game.setPlayerTurn(false); 
 					}
 					break;
@@ -71,7 +86,14 @@ public class Player extends Animus{
 						Game.getDungeon()[currentLevel] = new Level(10, x, y, currentLevel);
 						hp = 100;
 						Game.setPlayerTurn(false); 
-					}	
+					}
+					break;
+				case 6:
+					if(Game.getDungeon()[currentLevel].getDesign()[y][x].getItem() != null) {
+						addItem(Game.getLevel(currentLevel).getDesign()[y][x].getItem().getType());
+						Game.dungeon[currentLevel].getDesign()[y][x].setItem(null);
+					}
+					
 			}
 			
 			
@@ -84,24 +106,58 @@ public class Player extends Animus{
 	public String inventory() {
 		String output = "\tInventory\n";
 		for(int i = 0; i < inventoryIndex; i++) {
-			output += inventory[i].referent + ". " + inventory[i].getType() + " " + inventory[i];
+			output += inventory[i].referent + ". " + inventory[i].getType();
+			output += " " + inventory[i].getType().getDescription() + "\n";
 		}
 		return output;
 	}
 	
 	public String vitals() {
 		String output = "Player Vitals\n";
+		output += "--------------------------\n";
 		output += "Level: " + (currentLevel + 1) + "\n";
 		output += "Oxygen: " + hp + "%\n";
-		//output +=
+		output += "--------------------------\n";
 		
 		return output;
 	}
 	
-	public boolean getAlive() {
-		return isAlive;
+	public String textBuffer() {
+		String output = "     Environmental Factors\n";
+		output += "--------------------------------------\n";
+		output += "It's dark down here";
+		
+		return output;
 	}
 	
+	public void itemUse(char key) {
+		for(int i = 0; i < inventoryIndex; i++) {
+			if(key == inventory[i].getReferent()) {
+				
+				switch(inventory[i].getType()) {
+				case DRILL:
+					break;
+				case HARPOON:
+					break;
+				case ECHO:
+					Game.dungeon[currentLevel].echo();
+					break;
+				case RELAY:
+					hits[hitIndex] = null;
+					hitIndex--;
+					break;
+				case OXYGEN:
+					hp += 50;
+					break;
+				}
+				for(int j = i; j < inventoryIndex; j++) {
+					inventory[j] = inventory[j+1];
+				}
+				
+			}
+		}
+	}
+		
 	public Item referentFetch(char fetch) {
 		for(int i = 0; i < inventoryIndex; i++) {
 			if(inventory[inventoryIndex].referent == fetch) {
@@ -112,20 +168,23 @@ public class Player extends Animus{
 		return null;
 	}
 	
-	public void addItem(ItemType item) {
+	public void addItem(ItemType harpoon) {
 		char toBe = (char) ((Math.random() * 25) + 97);
-		char[] referents = new char[inventoryIndex];
 		boolean referenceClear;
 		
 		//checks to make sure that 
-		if(inventoryIndex < 25) {
-			inventory[inventoryIndex] = Game.getLevel(currentLevel).getDesign()[y][x].getItem();
+		if(inventoryIndex < 18) {
+			inventory[inventoryIndex] = new Item(harpoon);
 			referenceClear = true;
+			toBe = (char) ((Math.random() * 25) + 97);
+			
 			do {
 				if(referentFetch(toBe) != null || toBe == 'w' || toBe == 'a' 
-											   || toBe == 's' || toBe == 'd') {
+											   || toBe == 's' || toBe == 'd' || toBe == 'g') {
 					referenceClear = false;
 					toBe = (char) ((Math.random() * 25) + 97);
+				} else {
+					referenceClear = true;
 				}
 			} while(!referenceClear); 
 			inventory[inventoryIndex].setReferent(toBe);
@@ -139,6 +198,10 @@ public class Player extends Animus{
 	public void addHit(SpaceType type) {
 		Hit hit = new Hit(type);
 		hits[hitIndex] = hit;
+	}
+	
+	public boolean getAlive() {
+		return isAlive;
 	}
 	
 	public Hit[] getHits() {

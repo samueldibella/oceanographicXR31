@@ -2,14 +2,24 @@ package game.player;
 
 import game.enums.ItemType;
 
+//18 item max
 public class Item {
 
 	char referent;
 	ItemType type;
 	
+	public Item(Item reference) {
+		referent = ' ';
+		type = reference.getType();
+	}
+	
 	public Item(ItemType choice) {
 		referent = ' ';
 		type = choice;
+	}
+	
+	public char getReferent() {
+		return referent;
 	}
 	
 	public ItemType getType() {
@@ -22,5 +32,10 @@ public class Item {
 	
 	public String toString() {
 		return type.toString();
+	}
+
+	public char getDescription() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

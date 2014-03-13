@@ -1,20 +1,25 @@
 package game;
-import game.enums.SpaceType;
-import game.enums.Visibility;
+import game.enums.Mode;
 import game.player.Hit;
 import game.player.Player;
 import processing.core.PApplet;
 import processing.core.PFont;
 
+
 public class Game extends PApplet {
 	//TODO implement visibility (including walls), level generation
 	//TODO monster generation, basic combat, item drops, inventory
+
+	PFont fixed = createFont("secrcode.tff", 14);
 	PFont f = createFont("VeraMono", 14);
+	
 	public static Level[] dungeon = new Level[10];
 	int result;
 	int initX;
 	int initY;
+	Mode overall;
 	boolean moveEntered; 
+	boolean playerWin;
 	static boolean playerTurn;
 	public static Player hero;
 	public static int playerLevel;
@@ -25,9 +30,11 @@ public class Game extends PApplet {
 		background(0);
 		playerTurn = true;
 		moveEntered = false;
+		playerWin = false;
+		overall = Mode.TITLE;
 		result = 0;
-		initX = (int) (Math.random() * Level.X_SIZE - 2) + 1;
-		initY = (int) (Math.random() * Level.Y_SIZE - 2) + 1;
+		initX = (int) (Math.random() * Level.X_SIZE - 2) + 2;
+		initY = (int) (Math.random() * Level.Y_SIZE - 2) + 2;
 		hero = new Player(initX, initY);
 		dungeon[0] = new Level(10, initX, initY, 0);
 		dungeon[0].updateVisibility();
@@ -46,10 +53,13 @@ public class Game extends PApplet {
 	}
 
 	public void draw() {
-		stroke(255);
 		background(0);
-		//System.out.print(hero.getAlive());
-		//while(hero.getAlive() == true) {
+		textFont(f);
+		
+		switch(overall) {
+		case GAME:
+			pDisplay(dungeon[hero.getCurrentLevel()]);
+			//hitDisplay();
 			if(playerTurn == true && moveEntered == true) {
 				hero.move(result);
 				dungeon[hero.getCurrentLevel()].updateVisibility();
@@ -60,14 +70,35 @@ public class Game extends PApplet {
 				
 			}
 			
-			pDisplay(dungeon[hero.getCurrentLevel()]);
-			//hitDisplay();
 			result = 0;
-	//	}
-		
-		
+			break;
+		case TITLE:
+			titleScreen();
+			break;
+		case WIN:
+			winScreen();
+			break;
+		case LOSE:
+			loseScreen();
+			break;
+		}	
 	}
 
+	public void titleScreen() {
+		textAlign(CENTER);
+		fill(70, 111, 65);
+		text("<Press Enter to Begin>", 700, 630);
+		textAlign(LEFT);
+	}
+	
+	public void winScreen() {
+		
+	}
+	
+	public void loseScreen() {
+		
+	}
+	
 	private void hitDisplay() {
 		// TODO Auto-generated method stub
 		Hit[] hitList = hero.getHits();
@@ -94,14 +125,12 @@ public class Game extends PApplet {
 			}
 		}
 	}
-
-	
-	
 	
 	private void pDisplay(Level level) {
 		Space[][] display = level.getDesign();
+		
 		textFont(f);
-		fill(255);
+		fill(255, 125, 125);
 		int baseX = 150;
 		int baseY = 50;
 		int opacity = 255;
@@ -109,8 +138,13 @@ public class Game extends PApplet {
 		//basic text information
 		text(hero.vitals(), 10, 20);
 		text(hero.inventory(), 10, 150);
-		//text(hero.textBuffer(), 1250, 10);
-		text("Oceanographic Expedition XR31", 575, 20);
+		text("Oceanographic Expedition X R31", 575, 20);
+		text(hero.textBuffer(), 1200, 20);
+		
+		textFont(fixed);
+		text(localRadar(), 1200, 415);
+		
+		textFont(f);
 		
 		//display all level tiles
 		for (int j = 0; j < Level.Y_SIZE; j++) {
@@ -139,6 +173,8 @@ public class Game extends PApplet {
 				case EMPTY:
 					fill(255, opacity);
 					break;
+				case EEL:
+					fill(70, 111, 65);
 				case BARRICUDA:
 					fill(176,100,65, opacity);
 					break;
@@ -173,6 +209,14 @@ public class Game extends PApplet {
 
 	public void keyPressed() {
 		
+		if(key == ESC) {
+			System.exit(0);
+		}
+		
+		if(overall == Mode.TITLE && (key == ENTER || key == RETURN)) {
+				overall = Mode.GAME;
+		}
+		
 		//wasd and numpad player movement
 		switch(key) {
 		case('8'): case('w'): case('W'):
@@ -190,6 +234,13 @@ public class Game extends PApplet {
 		case('4'): case('a'): case('A'): 
 			result = 4;
 			moveEntered = true;
+			break;
+		case('g'):
+			result = 6;
+			moveEntered = true;
+			break;
+		default:
+			Game.hero.itemUse(key);
 			break;
 		}
 		
@@ -224,6 +275,33 @@ public class Game extends PApplet {
 		}
 	}
 
+	public String localRadar() {
+		String radar = "    Local Radar\n";
+		radar += "X X X X X\n";
+		
+		for(int j = -3; j <= 3; j++) {
+			radar += "X ";
+			
+			for(int i = -3; i <= 3; i++) {
+				if(Game.dungeon[playerLevel].isInLevel(hero.getX() + i, hero.getY() + j)) {
+					if(j == 0 && i == 0) {
+						radar += "@ ";
+					} else {
+						radar += Game.dungeon[playerLevel].getDesign()[hero.getY() + j][hero.getX() + i].toString() + " ";
+					}
+				} else {
+					radar += "X ";
+				}
+			}
+			
+			radar += "X\n";
+		}
+		
+		radar += "X X X X X";
+		
+		return radar;
+	}
+	
 	public static void setPlayerTurn(boolean input) {
 		playerTurn = input;
 	}

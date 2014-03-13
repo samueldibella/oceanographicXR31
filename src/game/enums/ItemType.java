@@ -2,9 +2,9 @@ package game.enums;
 
 public enum ItemType {
 	DRILL("^","Mining drill"),
-	ECHO("%","Echolocative Map"),
+	ECHO("%","Echo. Map"),
 	HARPOON("|","Harpoon"),
-	RELAY("&","Communication Relay"),
+	RELAY("&","Comm. Relay"),
 	OXYGEN("=","Oxygen Tank");
 	
 	private String script;
