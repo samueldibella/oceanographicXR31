@@ -12,8 +12,18 @@ public class Wounds {
 	}
 	
 	public void addHit(SpaceType type) {
+		if(hitIndex == hits.length) {
+			Hit[] temp = new Hit[hits.length*2];
+			for(int i = 0; i < hitIndex; i++) {
+				temp[i] = hits[i];
+			}
+			
+			hits = temp;
+		}
+		
 		Hit hit = new Hit(type);
 		hits[hitIndex] = hit;
+		hitIndex++;
 	}
 	
 	public Hit[] getHits() {
@@ -30,5 +40,31 @@ public class Wounds {
 	
 	public int getHitsIndex() {
 		return hitIndex;
+	}
+	
+	public String toString() {
+		String output = "Hits:\n";
+	
+		for(int i = 0; i < hitIndex; i++) {
+			output += hits[i] + "\n";
+		}
+		
+		output += "\n";
+		
+		return output;
+	}
+
+	public void bleedOut() {
+		float bleedRate = (float) Math.random() * 2;
+		float crackRate = 1;
+		
+		for(int i = 0; i < hitIndex - 1; i++) {
+			if(hits[i].currentRadius < hits[i].getMax()) {
+				hits[i].incrementCurrentRadius( .4 * bleedRate);		
+			} else if(hits[i].getDeviation() < 400) {
+				//hits[i].incrementCrack(.4 * crackRate);
+			}
+		}
+		
 	}
 }

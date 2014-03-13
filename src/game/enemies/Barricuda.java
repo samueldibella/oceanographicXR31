@@ -27,27 +27,9 @@ public class Barricuda extends Animus{
 	}
 
 	public void move(int direction) {
-		//System.out.println(direction);
-		Space[][] map = Game.getLevel(currentLevel).getDesign();
-		
-		if(map[y][x].getVisibility() == Visibility.INSIGHT)	{
-			playerSighted = true;
-		} else {
-			playerSighted = false;
-		}
-
-		if(playerSighted) {
-			seek();
-		} else {
-			wander(type, lethargy);
-		}
+		seek();
 
 	}
-
-	public void seek() {
-
-	}
-
 	
 }
 

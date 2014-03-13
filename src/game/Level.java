@@ -3,6 +3,7 @@ import game.enemies.Barricuda;
 import game.enemies.Eel;
 import game.enemies.Jellyfish;
 import game.enemies.Shark;
+import game.enums.InputMode;
 import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
@@ -23,6 +24,7 @@ import processing.core.PApplet;
 public class Level extends PApplet{
 	public static final int X_SIZE = 70;
 	public static final int Y_SIZE = 40;
+	static ArrayList<Space> stinky; 
 	int difficulty;
 
 	private int index;
@@ -39,6 +41,7 @@ public class Level extends PApplet{
 	 */
 	public Level(int level, int x, int y, int currentLevel) {
 		index = currentLevel;
+		stinky = new ArrayList<Space>();
 		difficulty = (int) ((level + 10) * Math.random());
 		design = new Space[Y_SIZE][X_SIZE];
 		exitPlaced = false;
@@ -67,17 +70,22 @@ public class Level extends PApplet{
 		}
 
 		FloorWalker floor = new FloorWalker(heroX, heroY);
+		FloorWalker floor2 = new FloorWalker(heroX, heroY);
 
 		for(int i = 0; i < 200; i++) {
 			//System.out.println(floor.getY() + ", " + floor.getX());
 			design[floor.getY()][floor.getX()].setSpace(SpaceType.EMPTY);
 			floor.move();
+			
+			design[floor2.getY()][floor2.getX()].setSpace(SpaceType.EMPTY);
+			floor2.move();
 			if(floor.getIsFar()) {
 				//	design[floor.getY()][floor.getX()].setSpace(SpaceType.EXIT);
 			}
 		}
 
 		design[floor.getY()][floor.getX()].setSpace(SpaceType.EXIT);
+		design[floor2.getY()][floor2.getX()].setSpace(SpaceType.EXIT);
 
 		assertWalls();
 
@@ -104,7 +112,7 @@ public class Level extends PApplet{
 					} else if(randomGen > (998 - difficulty)) {
 						design[j][i].setItem(ItemType.ECHO);
 					} else if(randomGen > (997 - difficulty)) {
-						design[j][i].setItem(ItemType.HARPOON);
+						design[j][i].setItem(ItemType.ADRL);
 					} else if(randomGen > (996 - difficulty)) {
 						design[j][i].setItem(ItemType.OXYGEN);
 					} else if(randomGen > (995 - difficulty)) {
@@ -157,63 +165,143 @@ public class Level extends PApplet{
 	//orders all enemies on level to execute their move
 	//manages monster overlap and death with player hits
 	void monsterMove() {
-		updateScent();
+		//updateScent();
 
 		for(int i = 0; i < livingBeings.size(); i++) {
 			int chance = (int) (Math.random() * 9);
 			Animus corpus = livingBeings.get(i);
-			corpus.move(chance);
-
-			if(corpus.getX() == Game.hero.getX() && (corpus.getY() == Game.hero.getY())) {
-				switch (corpus.getType()) {
-				case JELLYFISH:
-					Game.addBuffer("Your visor smears with jelly.");
-					break;
-				case EEL:
-					Game.addBuffer("You crush the eel.");
-					Eel.normalize(corpus.getX(), corpus.getY());
-					break;
-				case BARRICUDA:
-					Game.addBuffer("Teeth trying to tear the suit.");
-					break;
-				case SHARK:
-					Game.addBuffer("A brief near-death struggle.");
-					break;
-				default:
-					break;
-				}
-				
-				livingBeings.get(i).setAlive(false);
-				Game.hero.getBody().addHit(corpus.getType());
-				design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
-
+			
+			monsterCollision(corpus, i);
+			
+			if(corpus.isAlive) {
+				corpus.move(chance);
 			}
-
+			
+			monsterCollision(corpus, i);
 		}
 
 		Game.setPlayerTurn(true);
 	}
 
+	/*
 	void updateScent() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-
+		stinky = new ArrayList<Space>();
+		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
 				if(design[j][i].getSpace() == SpaceType.WALL) {
 					design[j][i].setScent(0);
 				}
-				if(design[j][i].getScent() > 0) {
-					design[j][i].setScent(design[j][i].getScent() - 5);
-				} 
+				if(design[j][i].getScent() < 10) {
+					design[j][i].setScent(0);
+				} else if(design[j][i].getScent() > 0) {
+					design[j][i].passScent();
+					System.out.println("washing stinck");
+					design[j][i].setScent(design[j][i].getScent() - 4);
+				}
 			}
 		}
 
-		design[y][x].instillScent(400);
+		design[y][x].instillScent(100);
+		stinky.add(design[y][x]);
+	} */
+
+	private void monsterCollision(Animus corpus, int livingIndex) {
+		if(corpus.getX() == Game.hero.getX() && (corpus.getY() == Game.hero.getY())) {
+			switch (corpus.getType()) {
+			case JELLYFISH:
+				Game.addBuffer("Your visor smears with jelly.");
+				break;
+			case EEL:
+				Game.addBuffer("You crush the eel.");
+				Eel.normalize(corpus.getX(), corpus.getY());
+				break;
+			case BARRICUDA:
+				Game.addBuffer("Teeth trying to tear the suit.");
+				break;
+			case SHARK:
+				Game.addBuffer("A brief near-death struggle.");
+				break;
+			default:
+				break;
+			}
+			
+			if(livingBeings.get(livingIndex).isAlive) {
+				livingBeings.get(livingIndex).setAlive(false);
+				livingBeings.remove(livingIndex);
+				Game.hero.getBody().addHit(corpus.getType());
+				design[corpus.getY()][corpus.getX()].setSpace(SpaceType.EMPTY);
+			}
+		}
 	}
 
-
-
+	public void drill(int direction) {
+		int x = Game.hero.getX();
+		int y = Game.hero.getY();
+		
+		switch(direction) {
+		case 0:
+			break;
+		//up
+		case 1:
+			for(int i = y - 1; i > 0; i--) {
+				if(design[i][x].getSpace() != SpaceType.EXIT){
+					design[i][x].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[i][x].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//right
+		case 2:
+			for(int i = x + 1; i < X_SIZE - 1; i++) {
+				if(design[y][i].getSpace() != SpaceType.EXIT){
+					design[y][i].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[y][i].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//down
+		case 3:
+			for(int i = y + 1; i < Y_SIZE - 1; i++) {
+				if(design[i][x].getSpace() != SpaceType.EXIT){
+					design[i][x].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[i][x].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		//left
+		case 4:
+			for(int i = x - 1; i > 0; i--) {
+				if(design[y][i].getSpace() != SpaceType.EXIT){
+					design[y][i].setSpace(SpaceType.EMPTY);
+				}
+				
+				design[y][i].setVisibility(Visibility.INSIGHT);
+			}
+			
+			Game.addBuffer("The drill pierces the earth.");
+			assertWalls();
+			Game.inputMode = InputMode.NORMAL;
+		default:
+			Game.addBuffer("You don't want to put that there.");
+			break;
+		}
+	}
+	
 	public void echo() {
 		for(int j = 1; j < Y_SIZE; j++) {
 			for(int i = 1; i < X_SIZE; i++) {
@@ -222,7 +310,6 @@ public class Level extends PApplet{
 		}
 	}
 
-	//TODO update so that fish movement isn't recorded
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
@@ -253,16 +340,25 @@ public class Level extends PApplet{
 		}*/
 
 		//leftwards fauxcast
-		for(int j = - 1; j <= 1; j++) {
+		for(int j = - 1; j <= 1; j += 2) {
 			for(int i = x; i > x - 10; i--) {
-				design[y + j][i].setVisibility(Visibility.INSIGHT);
-				if(design[y + j][i].getSpace() == SpaceType.WALL) {
+				if(isInLevel(i, y + j)) {
+					design[y + j][i].setVisibility(Visibility.INSIGHT);
+					if(design[y + j][i].getSpace() == SpaceType.WALL) {
+						break;
+					}
+				}		
+			}
+		}
+		
+		for(int i = x; i > x - 11; i--) {
+			if(isInLevel(i, y )) {
+				design[y][i].setVisibility(Visibility.INSIGHT);
+				if(design[y][i].getSpace() == SpaceType.WALL) {
 					break;
 				}
-			}
-
+			}		
 		}
-
 
 		//to the right
 		visionRayCast(x, y, x + 10 , y - 1);

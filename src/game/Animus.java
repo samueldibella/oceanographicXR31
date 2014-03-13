@@ -1,6 +1,7 @@
 package game;
 
 import game.enums.SpaceType;
+import game.enums.Visibility;
 
 public abstract class Animus {
 	protected int currentLevel;
@@ -96,33 +97,45 @@ public abstract class Animus {
 	}
 	
 	public void move(int direction) {
-	//	Space[] empty = Dungeon.getLevels()[currentLevel].design.checkNeigbors(space);
-	//probs way too inefficient
+		
+	}
+	
+	public void slide(int direction) {
+		Space[][] map = Game.getDungeon()[currentLevel].getDesign();
+		
 		switch(direction) {
 			case 0:
 				break;
 			//move up
 			case 1:
-				if(Game.getDungeon()[currentLevel].getDesign()[y - 1][x].isEmpty()) {
+				if(map[y - 1][x].isEmpty() || (Game.hero.getX() == x && Game.hero.getY() == y - 1)) {
+					map[y][x].setSpace(SpaceType.EMPTY);
 					y--;
+					map[y][x].setSpace(type);
 				}
 				break;
 			//move right
 			case 2:
-				if(Game.getDungeon()[currentLevel].getDesign()[y][x + 1].isEmpty()) {
+				if(map[y][x + 1].isEmpty() || (Game.hero.getX() == x + 1 && Game.hero.getY() == y)) {
+					map[y][x].setSpace(SpaceType.EMPTY);
 					x++;
+					map[y][x].setSpace(type);
 				}
 				break;
 			//move down
 			case 3:
-				if(Game.getDungeon()[currentLevel].getDesign()[y + 1][x].isEmpty()) {
+				if(map[y + 1][x].isEmpty() || (Game.hero.getX() == x && Game.hero.getY() == y + 1)) {
+					map[y][x].setSpace(SpaceType.EMPTY);
 					y++;
+					map[y][x].setSpace(type);
 				}
 				break;
 			//move left
 			case 4:
-				if(Game.getDungeon()[currentLevel].getDesign()[y][x - 1].isEmpty()) {
+				if(map[y][x - 1].isEmpty() || (Game.hero.getX() == x - 1 && Game.hero.getY() == y)) {
+					map[y][x].setSpace(SpaceType.EMPTY);
 					x--;
+					map[y][x].setSpace(type);
 				}
 				break;
 		}
@@ -130,43 +143,25 @@ public abstract class Animus {
 	
 	public void seek() {
 		Level level = Game.dungeon[currentLevel];
-		int xFinal = 0;
-		int yFinal = 0;
-		int scentFinal = 0;
 		
-		
-		for(int j = -1; j < 2; j++) {
-			for(int i = -1; i < 2; i++) {
-				if(level.isInLevel(y + j, x + i) && level.getDesign()[y + j][x + i].getScent() > scentFinal) {
-					xFinal = x + i;
-					yFinal = y + j;
-				}
+		if(level.getDesign()[y][x].getVisibility() == Visibility.INSIGHT) {
+			
+			if(x > Game.hero.getX()) {
+				slide(4);
+			} else if (x < Game.hero.getX()) {
+				slide(2);
 			}
-		}
-		
-		level.getDesign()[y][x].setSpace(SpaceType.EMPTY);
-		if(xFinal > x) {
-			x++;
-		} else if (xFinal < x) {
-			x--;
-		}
-		
-		if(yFinal > y) {
-			y++;
-		} else if(yFinal < y) {
-			y--;
-		}
-		
-		for(int i = 0; i < level.getBeings().size(); i++) {
-			if(level.getBeings().get(i).x == x && level.getBeings().get(i).y == y) {
-				level.getBeings().get(i).isAlive = false;
-				Game.addBuffer("A slight tremor in the water...");
+			
+			if(y > Game.hero.getY()) {
+				slide(1);
+			} else if (y < Game.hero.getX()) {
+				slide(3);
 			}
+		} else if(y != Game.hero.getY() && x != Game.hero.getX()){
+			wander(type, lethargy);
 		}
-		
-		level.getDesign()[y][x].setSpace(type);
 	}
-	
+
 	public int getX() {
 		return x;
 	}

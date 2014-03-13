@@ -21,7 +21,7 @@ public class Space {
 	private Item item;
 	private boolean creature;
 	private Visibility seen;
-	private int scent;
+	private float scent;
 
 	/**
 	 * Class constructor
@@ -51,10 +51,12 @@ public class Space {
 		scent = 0;
 	}
 
-	public void instillScent(int num) {
+	/*
+	public void instillScent(float num) {
 		scent = num;
 		passScent();
 	}
+	
 	
 	public void passScent() {
 		Level level = Game.dungeon[this.level];
@@ -62,15 +64,17 @@ public class Space {
 		
 		if(scent > 0) {
 			for(int i = 0; i < 4; i++) {
-				if(neighbors[i] != null) {
-					neighbors[i].instillScent((scent - i)/2);
+				if(neighbors[i] != null && !Level.stinky.contains(neighbors[i])) {
+					Level.stinky.add(neighbors[i]);
+					neighbors[i].setScent((scent - 5));
 				}
 			}
 		}
 	}
+	*/
 	
 	public boolean isEmpty() {
-		if((space == SpaceType.EMPTY || space == SpaceType.EXIT || space == SpaceType.JELLYFISH)) {
+		if((space == SpaceType.EMPTY || space == SpaceType.JELLYFISH)) {
 			return true;
 		} else {
 			return false;
@@ -162,12 +166,12 @@ public class Space {
 		seen = visited;
 	}
 	
-	public int getScent() {
+	public float getScent() {
 		return scent;
 	}
 	
-	public void setScent(int num) {
-		scent = num;
+	public void setScent(float f) {
+		scent = f;
 	}
 	
 }

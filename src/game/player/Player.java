@@ -11,7 +11,8 @@ public class Player extends Animus{
 	int inventoryIndex;
 	Wounds body;
 	boolean isAlive;
-
+	int chance;
+	
 	public Player(int xCo, int yCo) {
 		hp = 100;
 		speed = 50;
@@ -24,12 +25,13 @@ public class Player extends Animus{
 		x = xCo;
 		y = yCo;
 		isAlive = true;
+		chance = 0;
 
 	}
 
 	@Override
 	public void move(int direction) {
-		int chance = (int) (Math.random() * 9);
+		chance += (int) (Math.random() * 3);
 		Space[][] map = Game.getLevel(currentLevel).getDesign();
 
 		switch(direction) {
@@ -40,8 +42,9 @@ public class Player extends Animus{
 		case 1:
 			if(map[y - 1][x].getSpace() != SpaceType.WALL) {
 				y--;
-				if(chance < 6) {
+				if(chance > 4) {
 					hp--;
+					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
@@ -53,8 +56,9 @@ public class Player extends Animus{
 		case 2:
 			if(map[y][x + 1].getSpace() != SpaceType.WALL) {
 				x++;
-				if(chance < 6) {
+				if(chance > 4) {
 					hp--;
+					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
@@ -66,8 +70,9 @@ public class Player extends Animus{
 		case 3:
 			if(map[y + 1][x].getSpace() != SpaceType.WALL) {
 				y++;
-				if(chance < 4) {
+				if(chance > 4) {
 					hp--;
+					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
@@ -79,8 +84,9 @@ public class Player extends Animus{
 		case 4:
 			if(map[y][x - 1].getSpace() != SpaceType.WALL) {
 				x--;
-				if(chance < 6) {
+				if(chance > 4) {
 					hp--;
+					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
@@ -128,10 +134,10 @@ public class Player extends Animus{
 			} else {
 				Game.addBuffer("There's nothing there.");
 			}
-
+			break;
 		}	
 
-		if(hp == 0) {
+		if(hp < 0) {
 			isAlive = false;
 		}
 		
@@ -146,6 +152,7 @@ public class Player extends Animus{
 		output += "--------------------------\n";
 		output += "Level: " + (currentLevel + 1) + "\n";
 		output += "Oxygen: " + hp + "%\n";
+		output += "X: " + x + " Y: " + y + "\n";
 		output += "--------------------------\n";
 
 		return output;

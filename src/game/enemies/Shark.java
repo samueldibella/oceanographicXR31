@@ -18,18 +18,13 @@ public class Shark extends Animus {
 		y = initY;
 		aspect = "B";
 		isAlive = true;
+		lethargy = 1;
 		type = SpaceType.SHARK;
 		playerSighted = false;
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
 	public void move(int direction) {
-		if(Game.getLevel(currentLevel).getDesign()[y][x].getVisibility() == Visibility.INSIGHT)	{
-			playerSighted = true;
-		} 
-		
-		if(playerSighted) {
-			seek();
-		}
+		seek();
 	}
 }
