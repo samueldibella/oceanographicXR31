@@ -2,108 +2,77 @@ package game.enemies;
 
 import game.Animus;
 import game.Game;
+import game.Space;
 import game.enums.SpaceType;
 
 public class Eel extends Animus {
 	int chance;
-	int x;
-	int y;
 	String aspect;
+	boolean isAlive;
 	int currentLevel;
+	float lethargy;
 	
 	public Eel(int initX, int initY) {
 		x = initX;
 		y = initY;
+		lethargy = (float) 1.5;
 		aspect = "u";
+		isAlive = true;
+		type = SpaceType.EEL;
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
 	public void move(int direction) {
-		//	Space[] empty = Dungeon.getLevels()[currentLevel].design.checkNeigbors(space);
-		//probs way too inefficient
-		//chance = (int) Math.random() * 9;
+		//chance = (int) Math.random() * 2;
+		normalize();
 		
-		//System.out.println(direction);
+		wander(type, lethargy);
+		
+		shock();	
+	}
+	
+	public static void normalize(int k, int l) {
+		Space[][] map = Game.dungeon[Game.playerLevel].getDesign();
 
-		switch(direction) {
-		case 0:
-			break;
-			//move right
-		case 1:
-			if(Game.getLevel(currentLevel).getDesign()[y + 1][x - 1].getSpace() == SpaceType.EMPTY || 
-			(Game.hero.getX() == x - 1 && Game.hero.getY() == y + 1)) {
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-				y++;
-				x--;
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-			} 
-			break;
-		case 2:
-			if(Game.getLevel(currentLevel).getDesign()[y + 1][x].getSpace() == SpaceType.EMPTY || 
-			(Game.hero.getX() == x && Game.hero.getY() == y + 1)) {
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-				y++;
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-			} 
-			break;
-		case 3:
-			if(Game.getLevel(currentLevel).getDesign()[y + 1][x - 1].getSpace() == SpaceType.EMPTY || 
-			(Game.hero.getX() == x - 1 && Game.hero.getY() == y + 1)) {
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-				y++;
-				x++;
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-			} 
-			break;
-		case 4:
-			if(Game.getLevel(currentLevel).getDesign()[y - 1][x].getSpace() == SpaceType.EMPTY || 
-			(Game.hero.getX() == x && Game.hero.getY() == y - 1)) {
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-				y--;
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-			} 
-			break;
-		case 5:
-			break;
-		case 6:
-			if(Game.getLevel(currentLevel).getDesign()[y][x + 1].getSpace() == SpaceType.EMPTY || 
-			(Game.hero.getX() == (x + 1) && Game.hero.getY() == y)) {
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-				x++;
-				Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-			} 
-			break;
-			case 7:
-				if(Game.getLevel(currentLevel).getDesign()[y - 1][x - 1].getSpace() == SpaceType.EMPTY || 
-				(Game.hero.getX() == x - 1 && Game.hero.getY() == y - 1)) {
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-					x--;
-					y--;
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
+		for(int j = -2; j < 2; j++) {
+			for(int i = -2; i < 2; i++) {
+				if(Game.dungeon[Game.playerLevel].isInLevel(k + i, l + j)) {
+					if(map[l + j][k + i].getSpace() == SpaceType.SHOCK) {
+
+						map[l + j][k + i].setSpace(SpaceType.EMPTY);
+					}
 				}
-				break;
-			case 8:
-				if(Game.getLevel(currentLevel).getDesign()[y - 1][x].getSpace() == SpaceType.EMPTY || 
-				(Game.hero.getX() == x && Game.hero.getY() == y - 1)) {
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-					y--;
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-				} 
-				break;
-			case 9:
-				if(Game.getLevel(currentLevel).getDesign()[y + 1][x - 1].getSpace() == SpaceType.EMPTY || 
-				(Game.hero.getX() == x - 1 && Game.hero.getY() == y + 1)) {
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EMPTY);
-					y++;
-					x++;
-					Game.getLevel(currentLevel).getDesign()[y][x].setSpace(SpaceType.EEL);
-				} 
-				break;
+				
+			}
 		}
 	}
+	
+	void normalize() {
+		Space[][] map = Game.dungeon[Game.playerLevel].getDesign();
 
+		for(int j = -2; j < 2; j++) {
+			for(int i = -2; i < 2; i++) {
+				if(Game.dungeon[Game.playerLevel].isInLevel(x + i, y + j)) {
+					if(map[y + j][x + i].getSpace() == SpaceType.SHOCK) {
 
-	public String toString() {
-		return aspect;
+						map[y + j][x + i].setSpace(SpaceType.EMPTY);
+					}
+				}
+				
+			}
+		}
+	}
+	
+	void shock() {
+		Space[][] map = Game.dungeon[Game.playerLevel].getDesign();
+		
+		for(int j = -1; j < 2; j++) {
+			for(int i = -1; i < 2; i++) {
+				if(Game.dungeon[Game.playerLevel].isInLevel(x + i, y + j) && map[y + j][x + i].getSpace() == SpaceType.EMPTY) {
+						map[y + j][x + i].setSpace(SpaceType.SHOCK);
+
+				}
+			}
+		}
 	}
 }
