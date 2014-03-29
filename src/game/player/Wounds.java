@@ -42,6 +42,7 @@ public class Wounds {
 		return hitIndex;
 	}
 	
+	@Override
 	public String toString() {
 		String output = "Hits:\n";
 	

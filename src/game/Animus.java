@@ -182,6 +182,7 @@ public abstract class Animus {
 		return isAlive;
 	}
 	
+	@Override
 	public String toString() {
 		return aspect.toString();
 	}

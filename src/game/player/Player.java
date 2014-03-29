@@ -3,7 +3,6 @@ import game.Animus;
 import game.Game;
 import game.Level;
 import game.Space;
-import game.enums.ItemType;
 import game.enums.SpaceType;
 
 public class Player extends Animus{
@@ -100,13 +99,13 @@ public class Player extends Animus{
 				currentLevel++;
 				Game.playerLevel++;
 				Game.getDungeon()[currentLevel] = new Level(10, x, y, currentLevel);
-				hp = 100;
+				//hp = 100;
 				Game.setPlayerTurn(false); 
 				Game.addBuffer("You find a crevasse opening.");
-			} else if (currentLevel == 24){
+			} else if (currentLevel == 13){
 				currentLevel++;
 				Game.playerLevel++;
-				hp = 100;
+				//hp = 100;
 				Game.setPlayerTurn(false);
 				Game.setPlayerWin(true);
 				Game.addBuffer("The water is still down here.");
@@ -162,6 +161,7 @@ public class Player extends Animus{
 		return inventory;
 	}
 
+	@Override
 	public boolean getAlive() {
 		return isAlive;
 	}
@@ -170,10 +170,12 @@ public class Player extends Animus{
 		return body;
 	}
 
+	@Override
 	public int getX() {
 		return x;
 	}
 
+	@Override
 	public int getY() {
 		return y;
 	}

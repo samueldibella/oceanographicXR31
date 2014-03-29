@@ -19,6 +19,7 @@ public enum ItemType {
 		return description;
 	}
 	
+	@Override
 	public String toString() {
 		return script;
 	}

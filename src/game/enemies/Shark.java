@@ -3,7 +3,6 @@ package game.enemies;
 import game.Animus;
 import game.Game;
 import game.enums.SpaceType;
-import game.enums.Visibility;
 
 public class Shark extends Animus {
 	int chance;
@@ -24,6 +23,7 @@ public class Shark extends Animus {
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
+	@Override
 	public void move(int direction) {
 		seek();
 	}

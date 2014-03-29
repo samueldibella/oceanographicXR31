@@ -111,6 +111,7 @@ public class Inventory {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String output = "\tInventory\n";
 		for(int i = 0; i < inventoryIndex; i++) {

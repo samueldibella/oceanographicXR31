@@ -7,8 +7,6 @@ import game.enums.InputMode;
 import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
-import game.player.Player;
-
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -41,7 +39,7 @@ public class Level extends PApplet{
 	 */
 	public Level(int level, int x, int y, int currentLevel) {
 		index = currentLevel;
-		stinky = new ArrayList<Space>();
+		//stinky = new ArrayList<Space>();
 		difficulty = (int) ((level + 10) * Math.random());
 		design = new Space[Y_SIZE][X_SIZE];
 		exitPlaced = false;

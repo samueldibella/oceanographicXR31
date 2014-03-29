@@ -22,6 +22,7 @@ public class Eel extends Animus {
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
+	@Override
 	public void move(int direction) {
 		//chance = (int) Math.random() * 2;
 		normalize();

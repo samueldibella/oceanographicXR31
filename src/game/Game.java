@@ -1,7 +1,7 @@
 package game;
+
 import game.enums.InputMode;
 import game.enums.Mode;
-import game.enums.Visibility;
 import game.player.Hit;
 import game.player.Player;
 import game.player.Wounds;
@@ -13,8 +13,8 @@ public class Game extends PApplet {
 	//TODO implement visibility (including walls), level generation
 	//TODO monster generation, basic combat, item drops, inventory
 
-	PFont fixed = createFont("secrcode.tff", 14);
-	PFont f = createFont("VeraMono", 14);
+	PFont fixed; 
+	PFont f; 
 
 	public static Level[] dungeon = new Level[25];
 	int result;
@@ -32,7 +32,16 @@ public class Game extends PApplet {
 	public static Player hero;
 	public static int playerLevel;
 
+	public static void main(String args[]) {
+			
+	}
+	
+	@Override
 	public void setup() {
+
+		String[] fontList = PFont.list();
+		
+		System.out.println(fontList[0]);
 		frameRate(20);
 		size(1400, 650);
 		background(0);
@@ -40,7 +49,7 @@ public class Game extends PApplet {
 		playerTurn = true;
 		moveEntered = false;
 		playerWin = false;
-		overall = Mode.TITLE;
+		overall = Mode.GAME;
 		inputMode = InputMode.NORMAL;
 		result = 0;
 		initX = (int) (Math.random() * (Level.X_SIZE - 2)) + 2;
@@ -64,11 +73,13 @@ public class Game extends PApplet {
 		System.out.println(dungeon[0].rayCast(10, 6, 0, 0));*/
 	}
 
+	@Override
 	public void draw() {
 		background(0);
-		textFont(f);
 		noStroke();
-
+		fixed = createFont("secrcode.tff", 14);
+		f = createFont("VeraMono", 14);
+		
 		switch(overall) {
 		case GAME:
 			pDisplay(dungeon[hero.getCurrentLevel()]);
@@ -143,20 +154,54 @@ public class Game extends PApplet {
 
 	public void titleScreen() {
 		textAlign(CENTER);
+		fill(255,192,203);
+		text("OCEANOGRAPHIC EXPEDITION XR31", 700, 200 );
 		fill(70, 111, 65);
+		String output = "The Letter came several years ago, with its strange drawings and arcane coordinates.\n";
+		output += "It promised an escape, not just from the humdrum rhythm of normal life, but from world.\n";
+		output += "You settled your affairs, sold all your assets, bought a single hydrosuit, and chartered\n";
+		output += "a small boat to the location obliquely hinted at by the text.";
+		text(output,700, 250);
 		text("<Press Enter to Begin>", 700, 630);
 		textAlign(LEFT);
 	}
 
 	public void winScreen() {
-
+		textAlign(CENTER);
+		fill(255,193,37);
+		text('@', 700, 150);
+		fill(255, 125, 125);
+		String output = "The moment you descend to the final depth reading, you can sense something wrong.\n";
+		output += "The fish and the colorful plants that surrounded you on your descent are not here.\n";
+		output += "Carved grey stones litter the ocean floor, and you can make out a larger structure\n";
+		output += "through the murk. It looks... like a city of some sort. But that can't be, there\n";
+		output += "should be nothing here. You expected to find a treasure, another hint, but not this.\n";
+		output += "You brush against a rock outcropping and notice that it is also engraved with dark runes.\n";
+		output += "It seems be depicting a great crouching figure, protuberant and alien on the ocean floor.\n";
+		output += "Like a dream, a slow fear creeps into your mind, as you realize what exactly it was that\n";
+		output += "brought you here. The image, the idol, half-remembered and magnetic, waiting in the murk.";
+		
+		
+		output += "\nYour boat, with all your notes, drifts to the mainland, guided by a gentle ocean current.\n";
+		fill(0,139,139);
+		output += "\n\n Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn";
+		text(output, 700, 170);
 	}
 
 	public void loseScreen() {
 		textAlign(CENTER);
-		fill(70, 111, 65);
-		text("YOU LOSE", 700, 350);
-		textAlign(LEFT);
+		fill(255,193,37);
+		text('@', 700, 150);
+		fill(255, 125, 125);
+		String output = "You have been acutely aware of your diminishing oxygen reserves of some time.\n";
+		output += "But as the gauge crawls toward red you are nowhere near your destination.\n";
+		output += "It's not too far too go back, but something pulls you onward, even as your breathe\n";
+		output += "grows ragged. You can barely see through the gunk and mechanical malfunction,\n";
+		output += "as you start to lose consciousness, still going forward. Soon even blind determination\n";
+		output += "is no match for your oxygen deprived brain, and you fall to the sea floor, among the sand.\n";
+		output += "You think you can feel the presence of something larger \nthan any fish in these caves\n";
+		output += "and then you black out \n and you don't \n get up.";
+		text(output, 700, 170);
 	}
 
 	private void hitDisplay() {
@@ -206,7 +251,7 @@ public class Game extends PApplet {
 
 	private void pDisplay(Level level) {
 		Space[][] display = level.getDesign();
-
+		
 		textFont(f);
 		fill(255, 125, 125);
 		int baseX = 150;
@@ -220,7 +265,19 @@ public class Game extends PApplet {
 		text(buffer(), 1200, 20);
 
 		textFont(fixed);
-		text(localRadar(), 1200, 415);
+		text("       Local Sonar", 1200, 415);
+		String radar = localRadar();
+		int radarX = 1200;
+		int radarY = 430;
+		for(int j = 0; j < radar.length(); j++) {
+			if(radar.charAt(j) == '\n') {
+				radarX = 1200;
+				radarY += 15;
+			} else {
+				text(radar.charAt(j), radarX, radarY);
+				radarX += 15;
+			}
+		}
 
 		textFont(f);
 
@@ -270,8 +327,7 @@ public class Game extends PApplet {
 				if(j == hero.getY() && i == hero.getX()) {
 					fill(255,193,37);
 					text(hero.toString(), baseX, baseY);
-
-					//	System.out.printf("ScreenX: %d ScreenY: %d\n" , screenX, screenY);
+					
 					//for use by hitDisplay()
 					Game.screenX = baseX;
 					Game.screenY = baseY;
@@ -307,6 +363,7 @@ public class Game extends PApplet {
 		}
 	}
 
+	@Override
 	public void keyPressed() {
 
 		if(key == ESC) {
@@ -376,29 +433,28 @@ public class Game extends PApplet {
 	}
 
 	public String localRadar() {
-		String radar = "    Local Sonar\n";
-		radar += "X X X X X\n";
+		String radar = "XXXXXXXXX\n";
 		Level level = Game.dungeon[playerLevel]; 
 
 		for(int j = -3; j <= 3; j++) {
-			radar += "X ";
+			radar += "X";
 
 			for(int i = -3; i <= 3; i++) {
 				if(level.isInLevel(hero.getX() + i, hero.getY() + j)) {
 					if(j == 0 && i == 0) {
-						radar += "@ ";
+						radar += "@";
 					} else {
-						radar += level.getDesign()[hero.getY() + j][hero.getX() + i].trueSee() + " ";
+						radar += level.getDesign()[hero.getY() + j][hero.getX() + i].trueSee();
 					}
 				} else {
-					radar += "X ";
+					radar += "X";
 				}
 			}
 
 			radar += "X\n";
 		}
 
-		radar += "X X X X X";
+		radar += "XXXXXXXXX";
 
 		return radar;
 	}

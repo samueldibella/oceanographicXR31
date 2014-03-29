@@ -96,6 +96,7 @@ public class Space {
 	}
 
 	//TODO add visibility to method
+	@Override
 	public String toString() {	
 		ArrayList<Animus> beings = Game.getLevel(level).getBeings();
 		

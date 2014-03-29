@@ -40,6 +40,7 @@ public class Item {
 		referent = refer;
 	}
 	
+	@Override
 	public String toString() {
 		return type.toString();
 	}
