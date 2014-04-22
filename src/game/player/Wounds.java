@@ -57,7 +57,7 @@ public class Wounds {
 
 	public void bleedOut() {
 		float bleedRate = (float) Math.random() * 2;
-		float crackRate = 1;
+		//float crackRate = 1;
 		
 		for(int i = 0; i < hitIndex - 1; i++) {
 			if(hits[i].currentRadius < hits[i].getMax()) {

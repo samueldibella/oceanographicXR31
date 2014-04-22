@@ -15,6 +15,7 @@ public class Hit {
 	float deviationX;
 	float deviationX2;
 	
+	@SuppressWarnings("incomplete-switch")
 	Hit(SpaceType type2) {
 		x = Game.screenX;
 		y = Game.screenY;
