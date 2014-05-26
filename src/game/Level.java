@@ -179,28 +179,29 @@ public class Level extends PApplet{
 		Game.setPlayerTurn(true);
 	}
 
-	
+	/**Refreshes scent map for AI seek function
+	 * A space's scent will be a function of the distance from the player,
+	 * and some relation to it's overall position, to insure that there are no
+	 * tiles with the same scent value.
+	 */
 	void updateScent() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
+		int scentRate = 1000;
 		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
 				if(design[j][i].getSpace() == SpaceType.WALL) {
 					design[j][i].setScent(0);
-				}
-				if(design[j][i].getScent() < 10) {
-					design[j][i].setScent(0);
-				} else if(design[j][i].getScent() > 0) {
-					design[j][i].passScent();
-					System.out.println("washing stinck");
-					design[j][i].setScent(design[j][i].getScent() - 4);
+				} else {
+					int dx = i - x;
+					int dy = j - y;
+					float totalDelta = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));			
+					
+					design[j][i].setScent((totalDelta * scentRate) + j + i);
 				}
 			}
 		}
-
-		design[y][x].instillScent(100);
-		stinky.add(design[y][x]);
 	}
 
 	/**Removes creatures that intersect with player, and adds their
@@ -494,7 +495,6 @@ public class Level extends PApplet{
 
 		return emptyPoints;
 	}
-
 
 	@Override
 	public String toString() {

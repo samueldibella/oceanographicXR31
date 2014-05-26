@@ -143,23 +143,30 @@ public abstract class Animus {
 	
 	public void seek() {
 		Level level = Game.dungeon[currentLevel];
+		Space[] neighbors = new Space[9];
+		int buildIndex = 0;
+		int maxScent = 0;
 		
-		if(level.getDesign()[y][x].getVisibility() == Visibility.INSIGHT) {
-			
-			if(x > Game.hero.getX()) {
-				slide(4);
-			} else if (x < Game.hero.getX()) {
-				slide(2);
+		for(int j = -1; j <= 1; j++) {
+			for(int i = -1; i <= 1; i++) {
+				if(level.isInLevel(y + j, x + i)) {
+					neighbors[buildIndex++] = level.getDesign()[y + j][x + i];
+				}	
 			}
-			
-			if(y > Game.hero.getY()) {
-				slide(1);
-			} else if (y < Game.hero.getX()) {
-				slide(3);
-			}
-		} else if(y != Game.hero.getY() && x != Game.hero.getX()){
-			wander(type, lethargy);
 		}
+		
+		for(int i = 0; i < 8; i++) {
+			if(neighbors[i] != null && neighbors[i].getScent() > neighbors[maxScent].getScent()) {
+				maxScent = i;
+			}
+		}
+		
+		level.getDesign()[y][x].setSpace(SpaceType.EMPTY);
+		
+		x = neighbors[maxScent].getX();
+		y = neighbors[maxScent].getY();
+		
+		neighbors[maxScent].setSpace(type);
 	}
 
 	public int getX() {

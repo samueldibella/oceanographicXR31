@@ -50,28 +50,6 @@ public class Space {
 		seen = vision;
 		scent = 0;
 	}
-
-	/*
-	public void instillScent(float num) {
-		scent = num;
-		passScent();
-	}
-	
-	
-	public void passScent() {
-		Level level = Game.dungeon[this.level];
-		Space[] neighbors = level.checkNeighbors(this);
-		
-		if(scent > 0) {
-			for(int i = 0; i < 4; i++) {
-				if(neighbors[i] != null && !Level.stinky.contains(neighbors[i])) {
-					Level.stinky.add(neighbors[i]);
-					neighbors[i].setScent((scent - 5));
-				}
-			}
-		}
-	}
-	*/
 	
 	public boolean isEmpty() {
 		if((space == SpaceType.EMPTY || space == SpaceType.JELLYFISH)) {
@@ -158,12 +136,10 @@ public class Space {
 	}
 
 	public Visibility getVisibility() {
-		// TODO Auto-generated method stub
 		return seen;
 	}
 
 	public void setVisibility(Visibility visited) {
-		// TODO Auto-generated method stub
 		seen = visited;
 	}
 	
