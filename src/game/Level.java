@@ -87,7 +87,6 @@ public class Level extends PApplet{
 
 		assertWalls();
 
-
 		for(int j = 0; j < Y_SIZE; j++) {
 			for(int i = 0; i < X_SIZE; i++) {
 				if(design[j][i].getSpace() == SpaceType.EMPTY) {
@@ -311,7 +310,8 @@ public class Level extends PApplet{
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-
+		//int visionRange = 6;
+		
 		for(int j = 0; j < Level.Y_SIZE; j++) {
 			for(int i = 0; i < Level.X_SIZE; i++) {
 				if(design[j][i].getVisibility() == Visibility.INSIGHT) {
@@ -319,190 +319,117 @@ public class Level extends PApplet{
 				}
 			}
 		}
-
-		/* for the dream of real raycasting
-		for(int i = 0; i < X_SIZE - 1; i++) {
-			visionRayCast(x,y,i, 0);
-		}
-
-		for(int i = 0; i < X_SIZE - 1; i++) {
-			visionRayCast(x,y,i, Y_SIZE - 1);
-		}
-
-		for(int j = 0; j < Y_SIZE - 1; j++) {
-			visionRayCast(x,y,0,j);
-		}
-
-		for(int j = 0; j < Y_SIZE - 1; j++) {
-			visionRayCast(x,y,Y_SIZE - 1,j);
-		}*/
-
-		//leftwards fauxcast
-		for(int j = - 1; j <= 1; j += 2) {
-			for(int i = x; i > x - 10; i--) {
-				if(isInLevel(i, y + j)) {
-					design[y + j][i].setVisibility(Visibility.INSIGHT);
-					if(design[y + j][i].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}		
-			}
-		}
 		
-		for(int i = x; i > x - 11; i--) {
-			if(isInLevel(i, y )) {
-				design[y][i].setVisibility(Visibility.INSIGHT);
-				if(design[y][i].getSpace() == SpaceType.WALL) {
-					break;
-				}
-			}		
-		}
+		visionRayCast(x, y, x + 0, y + 4);
+		visionRayCast(x, y, x + 1, y + 4);
+		visionRayCast(x, y, x + 2, y + 4);
+		visionRayCast(x, y, x + 3, y + 4);
+		
+		visionRayCast(x, y, x + 0, y - 4);
+		visionRayCast(x, y, x + 1, y - 4);
+		visionRayCast(x, y, x + 2, y - 4);
+		visionRayCast(x, y, x + 3, y - 4);
+		
+		visionRayCast(x, y, x - 0, y + 4);
+		visionRayCast(x, y, x - 1, y + 4);
+		visionRayCast(x, y, x - 2, y + 4);
+		visionRayCast(x, y, x - 3, y + 4);
+		
+		visionRayCast(x, y, x - 0, y - 4);
+		visionRayCast(x, y, x - 1, y - 4);
+		visionRayCast(x, y, x - 2, y - 4);
+		visionRayCast(x, y, x - 3, y - 4);
+		
+		visionRayCast(x, y, x + 4, y + 0);
+		visionRayCast(x, y, x + 4, y + 1);
+		visionRayCast(x, y, x + 4, y + 2);
+		visionRayCast(x, y, x + 4, y + 3);
+		
+		visionRayCast(x, y, x - 4, y + 0);
+		visionRayCast(x, y, x - 4, y + 1);
+		visionRayCast(x, y, x - 4, y + 2);
+		visionRayCast(x, y, x - 4, y + 3);
+		
+		visionRayCast(x, y, x + 4, y - 0);
+		visionRayCast(x, y, x + 4, y - 1);
+		visionRayCast(x, y, x + 4, y - 2);
+		visionRayCast(x, y, x + 4, y - 3);
+		
+		visionRayCast(x, y, x - 4, y - 0);
+		visionRayCast(x, y, x - 4, y - 1);
+		visionRayCast(x, y, x - 4, y - 2);
+		visionRayCast(x, y, x - 4, y - 3);
 
-		//to the right
-		visionRayCast(x, y, x + 10 , y - 1);
-		visionRayCast(x, y, x + 11 , y);
-		visionRayCast(x, y, x + 10, y + 1);
 
-		//to the left
-		//visionRayCast(x, y, x - 10, y - 1);
-		//visionRayCast(x, y, x - 10, y);
-		//visionRayCast(x, y, x - 10, y + 1);
-
-		//down
-		visionRayCast(x - 1, y, x - 1, y + 10);
-		visionRayCast(x, y, x, y + 11);
-		visionRayCast(x + 1, y, x + 1, y + 10);
-
-		//up
-		visionRayCast(x - 1, y, x - 1, y - 10);
-		visionRayCast(x, y, x, y - 11);
-		visionRayCast(x + 1, y, x + 1, y - 10);
-
-		//diagonals 
-		visionRayCast(x, y, x + 3, y - 3);
-		visionRayCast(x, y, x + 3, y + 3);
-		visionRayCast(x, y, x - 3, y + 3);
-		visionRayCast(x, y, x - 3, y - 3); 
 
 	}
 
-	//attempt to tell if space between two points is totally empty
-	//based off wikipedia entry for bresenham's line theorem &
-	//http://deepnight.net/bresenham-magic-raycasting-line-of-sight-pathfinding/
+	/**Used http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
+	 * primitive raycast for player vision
+	 * @param x0
+	 * @param y0
+	 * @param x3
+	 * @param y3
+	 */
 	public void visionRayCast(int x0, int y0,  int x3, int y3) {
-		int x1 = x0;
-		int y1 = y0;
-		int x2 = x3;
-		int y2 = y3;
-
-		while(!isInLevel(x2, y2)) {
-			if(x2 < 0) {
-				x2++;
-			}
-			if(x2 > X_SIZE - 1) {
-				x2--;
-			}
-			if(y2 < 0) {
-				y2++;
-			}
-			if(y2 > Y_SIZE - 1) {
-				y2--;
-			}
-		} 
-
-		//vertical lines
-		if(x2 - x2 == 0) {
-			int deltaY = y2 - y1;
-
-			//upward
-			if(deltaY > 0) {
-				for(int i = y1; i < y2; i++ ) {
-					design[i][x1].setVisibility(Visibility.INSIGHT);
-					if(design[i][x1].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
-
-				//downwards
-			} else if(deltaY < 0) {
-				for(int i = y1; i > y2; i--) {
-					design[i][x1].setVisibility(Visibility.INSIGHT);
-					if(design[i][x1].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
+		int w = x3 - x0;
+		int h = y3 - y0;
+		
+		int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+		
+		//octant selector
+		if(w < 0) {
+			dx1 = -1;
+		} else if( w > 0) {
+			dx1 = 1;
+		}
+		
+		if(h < 0) {
+			dy1 = -1;
+		} else if (h > 0) {
+			dy1 = 1;
+		}
+		
+		if(w < 0) {
+			dx2 = -1;
+		} else if(w > 0) {
+			dx2 = 1;
+		}
+		
+		int longest = Math.abs(w);
+		int shortest = Math.abs(h);
+		
+		if(!(longest > shortest)) {
+			longest = Math.abs(h);
+			shortest = Math.abs(w);
+			
+			if(h < 0) {
+				dy2 = -1;
+			} else if (h > 0) {
+				dy2 = 1;
 			}
 		}
-
-		float error = 0;
-		int temp;
-		int yStep;
-		boolean swapXY = Math.abs(x1 - x2) > Math.abs(x1 - x2);
-
-		if(swapXY) {
-			temp = x1; x1 = y1; y1 = temp;
-			temp = x1; x1 = y1; y1 = temp;
-		}
-
-		if( x1 > x2) {
-			temp = x1; x1 = x2; x2 = temp;
-			temp = y1; y1 = y2; y1 = temp;
-		}
-
-		int deltaX = (x2 - x1);
-		int deltaY = Math.abs(y2 - y1);
-		int y = y1;
-
-		if(y1 < y2) {
-			yStep = 1;
-		} else {
-			yStep = -1;
-		}
-
-		if(swapXY) {
-			for(int x = x1; x < x2; x++) {
-				design[y][x].setVisibility(Visibility.INSIGHT);
-				if(design[y][x].getSpace() == SpaceType.WALL) {
-					break;
+		
+		int numerator = longest >> 1;
+		
+		for(int i = 0; i <= longest; i++) {
+			if(isInLevel(x0, y0) && design[y0][x0].getSpace() != SpaceType.WALL) {
+				design[y0][x0].setVisibility(Visibility.INSIGHT);
+				numerator += shortest;
+				
+				if(!(numerator < longest)) {
+					numerator -= longest;
+					x0 += dx1;
+					y0 += dy1;
+				} else {
+					x0 += dx2;
+					y0 += dy2;
 				}
-
-				error -= deltaY;
-				if(error < 0) {
-					y += yStep;
-					error += deltaX;
-				}
-			}
-
-			if(deltaX == 0) {
-				for(int x = x1; x < x2; x++) {
-					design[y][x].setVisibility(Visibility.INSIGHT);
-					if(design[y][x].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
-			}
-		} else {
-			for(int x = x1; x < x2; x++) {
-				design[y][x].setVisibility(Visibility.INSIGHT);
-				if(design[y][x].getSpace() == SpaceType.WALL) {
-					break;
-				}
-
-				error -= deltaY;
-				if(error < 0) {
-					y += yStep;
-					error += deltaX;
-				}
-
-			}
-
-			if(deltaX == 0) {
-				for(int x = x1; x < x2; x++) {
-					design[y][x].setVisibility(Visibility.INSIGHT);
-					if(design[y][x].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
+			} else if( design[y0][x0].getSpace() == SpaceType.WALL){
+				design[y0][x0].setVisibility(Visibility.INSIGHT);
+				break;
+			} else {
+				break;
 			}
 		}
 	}
