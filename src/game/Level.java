@@ -39,7 +39,6 @@ public class Level extends PApplet{
 	 */
 	public Level(int level, int x, int y, int currentLevel) {
 		index = currentLevel;
-		//stinky = new ArrayList<Space>();
 		difficulty = (int) ((level + 10) * Math.random());
 		design = new Space[Y_SIZE][X_SIZE];
 		exitPlaced = false;
@@ -162,7 +161,7 @@ public class Level extends PApplet{
 	//orders all enemies on level to execute their move
 	//manages monster overlap and death with player hits
 	void monsterMove() {
-		//updateScent();
+		updateScent();
 
 		for(int i = 0; i < livingBeings.size(); i++) {
 			int chance = (int) (Math.random() * 9);
@@ -180,11 +179,10 @@ public class Level extends PApplet{
 		Game.setPlayerTurn(true);
 	}
 
-	/*
+	
 	void updateScent() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		stinky = new ArrayList<Space>();
 		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
@@ -203,8 +201,14 @@ public class Level extends PApplet{
 
 		design[y][x].instillScent(100);
 		stinky.add(design[y][x]);
-	} */
+	}
 
+	/**Removes creatures that intersect with player, and adds their
+	 * hit effect to general player state
+	 * 
+	 * @param corpus
+	 * @param livingIndex
+	 */
 	private void monsterCollision(Animus corpus, int livingIndex) {
 		if(corpus.getX() == Game.hero.getX() && (corpus.getY() == Game.hero.getY())) {
 			switch (corpus.getType()) {
@@ -234,6 +238,10 @@ public class Level extends PApplet{
 		}
 	}
 
+	/**Cuts a hole in the level in the cardinal directions
+	 * 
+	 * @param direction
+	 */
 	public void drill(int direction) {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
@@ -299,6 +307,9 @@ public class Level extends PApplet{
 		}
 	}
 	
+	/**
+	 * In effect reveals the whole level. Used for map item.
+	 */
 	public void echo() {
 		for(int j = 1; j < Y_SIZE; j++) {
 			for(int i = 1; i < X_SIZE; i++) {
@@ -307,10 +318,13 @@ public class Level extends PApplet{
 		}
 	}
 
+	/**
+	 * Between each player turn, refreshes the visibility of tiles
+	 */
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		//int visionRange = 6;
+		int visionRange = 10;
 		
 		for(int j = 0; j < Level.Y_SIZE; j++) {
 			for(int i = 0; i < Level.X_SIZE; i++) {
@@ -319,57 +333,29 @@ public class Level extends PApplet{
 				}
 			}
 		}
+			
+		for(int j = -5 -(visionRange / 2); j <= (visionRange / 2) + 5; j++) {
+			//left and right side
+			visionRayCast(x, y, x - visionRange, y + j);
+			visionRayCast(x, y, x + visionRange, y + j);
+			
+			//up and down
+			visionRayCast(x, y, x + j, y - visionRange);
+			visionRayCast(x, y, x + j, y + visionRange);
+		}
 		
-		visionRayCast(x, y, x + 0, y + 4);
-		visionRayCast(x, y, x + 1, y + 4);
-		visionRayCast(x, y, x + 2, y + 4);
-		visionRayCast(x, y, x + 3, y + 4);
-		
-		visionRayCast(x, y, x + 0, y - 4);
-		visionRayCast(x, y, x + 1, y - 4);
-		visionRayCast(x, y, x + 2, y - 4);
-		visionRayCast(x, y, x + 3, y - 4);
-		
-		visionRayCast(x, y, x - 0, y + 4);
-		visionRayCast(x, y, x - 1, y + 4);
-		visionRayCast(x, y, x - 2, y + 4);
-		visionRayCast(x, y, x - 3, y + 4);
-		
-		visionRayCast(x, y, x - 0, y - 4);
-		visionRayCast(x, y, x - 1, y - 4);
-		visionRayCast(x, y, x - 2, y - 4);
-		visionRayCast(x, y, x - 3, y - 4);
-		
-		visionRayCast(x, y, x + 4, y + 0);
-		visionRayCast(x, y, x + 4, y + 1);
-		visionRayCast(x, y, x + 4, y + 2);
-		visionRayCast(x, y, x + 4, y + 3);
-		
-		visionRayCast(x, y, x - 4, y + 0);
-		visionRayCast(x, y, x - 4, y + 1);
-		visionRayCast(x, y, x - 4, y + 2);
-		visionRayCast(x, y, x - 4, y + 3);
-		
-		visionRayCast(x, y, x + 4, y - 0);
-		visionRayCast(x, y, x + 4, y - 1);
-		visionRayCast(x, y, x + 4, y - 2);
-		visionRayCast(x, y, x + 4, y - 3);
-		
-		visionRayCast(x, y, x - 4, y - 0);
-		visionRayCast(x, y, x - 4, y - 1);
-		visionRayCast(x, y, x - 4, y - 2);
-		visionRayCast(x, y, x - 4, y - 3);
-
-
-
+		visionRayCast(x, y, x + 3, y + 3);
+		visionRayCast(x, y, x + 3, y - 3);
+		visionRayCast(x, y, x - 3, y + 3);
+		visionRayCast(x, y, x - 3, y - 3);
 	}
 
 	/**Used http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
 	 * primitive raycast for player vision
-	 * @param x0
-	 * @param y0
-	 * @param x3
-	 * @param y3
+	 * @param x0 start x coordinate
+	 * @param y0 start y coordinate
+	 * @param x3 end 
+	 * @param y3 end
 	 */
 	public void visionRayCast(int x0, int y0,  int x3, int y3) {
 		int w = x3 - x0;
@@ -408,6 +394,8 @@ public class Level extends PApplet{
 			} else if (h > 0) {
 				dy2 = 1;
 			}
+			
+			dx2 = 0;
 		}
 		
 		int numerator = longest >> 1;
@@ -434,6 +422,7 @@ public class Level extends PApplet{
 		}
 	}
 
+	//basic test to insure no null reference passes
 	public boolean isInLevel(int x, int y) {
 		if(y < 0 || y > Y_SIZE - 1) {
 			return false;
@@ -447,6 +436,7 @@ public class Level extends PApplet{
 	}
 
 	//total empty spaces next to passed space
+	//all eight
 	public int localEmpty(Space p) {
 		int emptySpaces = 0;
 		int yScale;
@@ -470,7 +460,7 @@ public class Level extends PApplet{
 	}
 
 	/**Checks a points neighbors for ones of type EMPTY
-	 * and returns a list of them.
+	 * and returns a list of them. Only cardinal directions
 	 * @param p reference point
 	 * @return list of empty neighbor spaces
 	 */
