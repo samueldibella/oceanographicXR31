@@ -3,6 +3,7 @@ package game.enemies;
 import game.Animus;
 import game.Game;
 import game.enums.SpaceType;
+import game.enums.Visibility;
 
 public class Barricuda extends Animus{
 	int chance;
@@ -26,7 +27,13 @@ public class Barricuda extends Animus{
 
 	@Override
 	public void move(int direction) {
-		seek();
+		if(Game.dungeon[currentLevel].getDesign()[y][x].getVisibility() == Visibility.INSIGHT) {
+			seek();
+		} else {
+			wander(type, lethargy);
+		}
+		
+		
 
 	}
 	

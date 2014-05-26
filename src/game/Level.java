@@ -7,6 +7,7 @@ import game.enums.InputMode;
 import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
+
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -19,6 +20,7 @@ import processing.core.PApplet;
  * @see SetOfSpaces
  * @see InputOutput
  */
+@SuppressWarnings("serial")
 public class Level extends PApplet{
 	public static final int X_SIZE = 70;
 	public static final int Y_SIZE = 40;
@@ -196,9 +198,10 @@ public class Level extends PApplet{
 				} else {
 					int dx = i - x;
 					int dy = j - y;
-					float totalDelta = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));			
+					float totalDelta = (float) (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));			
 					
-					design[j][i].setScent((totalDelta * scentRate) + j + i);
+					
+					design[j][i].setScent((((scentRate - totalDelta) * 100) - ((j + i) * .1f)));
 				}
 			}
 		}

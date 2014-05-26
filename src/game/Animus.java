@@ -1,7 +1,6 @@
 package game;
 
 import game.enums.SpaceType;
-import game.enums.Visibility;
 
 public abstract class Animus {
 	protected int currentLevel;
@@ -145,7 +144,7 @@ public abstract class Animus {
 		Level level = Game.dungeon[currentLevel];
 		Space[] neighbors = new Space[9];
 		int buildIndex = 0;
-		int maxScent = 0;
+		int maxScent = -1;
 		
 		for(int j = -1; j <= 1; j++) {
 			for(int i = -1; i <= 1; i++) {
@@ -156,17 +155,23 @@ public abstract class Animus {
 		}
 		
 		for(int i = 0; i < 8; i++) {
-			if(neighbors[i] != null && neighbors[i].getScent() > neighbors[maxScent].getScent()) {
+			if(neighbors[i] != null && maxScent == -1) {
+				maxScent = i;
+			} else if(neighbors[i] != null && neighbors[i].getScent() > neighbors[maxScent].getScent()) {
 				maxScent = i;
 			}
 		}
 		
-		level.getDesign()[y][x].setSpace(SpaceType.EMPTY);
-		
-		x = neighbors[maxScent].getX();
-		y = neighbors[maxScent].getY();
-		
-		neighbors[maxScent].setSpace(type);
+		if(maxScent != -1) {
+			//System.out.println("here");
+			level.getDesign()[y][x].setSpace(SpaceType.EMPTY);
+			
+			x = neighbors[maxScent].getX();
+			y = neighbors[maxScent].getY();
+			
+			neighbors[maxScent].setSpace(type);
+		}
+
 	}
 
 	public int getX() {

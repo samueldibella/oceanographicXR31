@@ -9,6 +9,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 
 
+@SuppressWarnings("serial")
 public class Game extends PApplet {
 	//TODO implement visibility (including walls), level generation
 	//TODO monster generation, basic combat, item drops, inventory
