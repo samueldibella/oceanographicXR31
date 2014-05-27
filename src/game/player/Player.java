@@ -10,6 +10,7 @@ public class Player extends Animus{
 	int inventoryIndex;
 	Wounds body;
 	boolean isAlive;
+	boolean lightsOn;
 	int chance;
 	
 	public Player(int xCo, int yCo) {
@@ -24,8 +25,8 @@ public class Player extends Animus{
 		x = xCo;
 		y = yCo;
 		isAlive = true;
+		lightsOn = true;
 		chance = 0;
-
 	}
 
 	@Override
@@ -134,7 +135,20 @@ public class Player extends Animus{
 				Game.addBuffer("There's nothing there.");
 			}
 			break;
-		}	
+			
+		//SPACE: the lights
+		case 7:
+			if(lightsOn) {
+				Game.addBuffer("Your lights snap off.");
+			} else {
+				Game.addBuffer("A low hum as lights return.");
+			}
+			
+			lightsOn = !lightsOn;
+			break;
+		}
+		
+		
 
 		if(hp < 0) {
 			isAlive = false;
@@ -182,5 +196,9 @@ public class Player extends Animus{
 
 	public int getCurrentLevel() {
 		return currentLevel;
+	}
+	
+	public boolean getLights() {
+		return lightsOn;
 	}
 }

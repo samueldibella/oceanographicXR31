@@ -60,18 +60,6 @@ public class Game extends PApplet {
 		dungeon[0] = new Level(10, initX, initY, 0);
 		dungeon[0].updateVisibility();
 		addBuffer("It's dark down here...");
-
-		/*raycast test
-		dungeon[0].getDesign()[10][6].setSpace(SpaceType.AIM);
-		dungeon[0].getDesign()[16][5].setSpace(SpaceType.AIM);
-		dungeon[0].getDesign()[3][1].setSpace(SpaceType.AIM);
-		dungeon[0].getDesign()[1][3].setSpace(SpaceType.AIM);
-		dungeon[0].getDesign()[21][5].setSpace(SpaceType.AIM);
-		dungeon[0].getDesign()[0][0].setSpace(SpaceType.AIM);
-		System.out.println(dungeon[0].rayCast(0, 0, 10, 6));
-		System.out.println(dungeon[0].rayCast(16, 5, 1, 3));
-		System.out.println(dungeon[0].rayCast(3, 1, 21, 5));
-		System.out.println(dungeon[0].rayCast(10, 6, 0, 0));*/
 	}
 
 	@Override
@@ -114,7 +102,9 @@ public class Game extends PApplet {
 						fill(255, 100);
 						rect(0,0, 1400, 650);
 						hero.move(result);
+
 						dungeon[hero.getCurrentLevel()].updateVisibility();
+
 						pDisplay(dungeon[hero.getCurrentLevel()]);
 						hitDisplay();
 					}
@@ -367,36 +357,39 @@ public class Game extends PApplet {
 	@Override
 	public void keyPressed() {
 
-		if(key == ESC) {
-			System.exit(0);
-		}
-
 		if(overall == Mode.TITLE && (key == ENTER || key == RETURN)) {
 			overall = Mode.GAME;
 		}
-
+		
 		//wasd and numpad player movement
 		switch(key) {
 		case('8'): case('w'): case('W'):
 			result = 1; 
-		moveEntered = true;
+			moveEntered = true;
 		break;
 		case('6'): case('d'): case('D'): 
 			result = 2;
-		moveEntered = true;
+			moveEntered = true;
 		break;
 		case('2'): case('s'): case('S'): 
 			result = 3;
-		moveEntered = true;
+			moveEntered = true;
 		break;
 		case('4'): case('a'): case('A'): 
 			result = 4;
-		moveEntered = true;
+			moveEntered = true;
 		break;
-		case('g'):
+		case('g'): case('G'):
 			result = 6;
-		moveEntered = true;
+			moveEntered = true;
 		break;
+		
+		//lights
+		case('e'): case('E'):
+			result = 7;
+			moveEntered = true;
+			
+		//possible use of inventory item
 		default:
 			hero.getInventory().itemUse(key);
 			break;
@@ -413,20 +406,20 @@ public class Game extends PApplet {
 			switch(keyCode) {
 			case(UP):
 				result = 1;
-			moveEntered = true;
-			break;
+				moveEntered = true;
+				break;
 			case(RIGHT):
 				result = 2;
-			moveEntered = true;
-			break;
+				moveEntered = true;
+				break;
 			case(DOWN):
 				result = 3;
-			moveEntered = true;
-			break;
+				moveEntered = true;
+				break;
 			case(LEFT):
 				result = 4;
-			moveEntered = true;
-			break;
+				moveEntered = true;
+				break;
 			case(ESC):
 				System.exit(0);
 			}

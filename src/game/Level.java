@@ -336,21 +336,25 @@ public class Level extends PApplet{
 				}
 			}
 		}
-			
-		for(int j = -5 -(visionRange / 2); j <= (visionRange / 2) + 5; j++) {
-			//left and right side
-			visionRayCast(x, y, x - visionRange, y + j);
-			visionRayCast(x, y, x + visionRange, y + j);
-			
-			//up and down
-			visionRayCast(x, y, x + j, y - visionRange);
-			visionRayCast(x, y, x + j, y + visionRange);
-		}
 		
-		visionRayCast(x, y, x + 3, y + 3);
-		visionRayCast(x, y, x + 3, y - 3);
-		visionRayCast(x, y, x - 3, y + 3);
-		visionRayCast(x, y, x - 3, y - 3);
+		//only vision with lights on
+		if(Game.hero.getLights() == true) {
+			for(int j = -5 -(visionRange / 2); j <= (visionRange / 2) + 5; j++) {
+				//left and right side
+				visionRayCast(x, y, x - visionRange, y + j);
+				visionRayCast(x, y, x + visionRange, y + j);
+				
+				//up and down
+				visionRayCast(x, y, x + j, y - visionRange);
+				visionRayCast(x, y, x + j, y + visionRange);
+			}
+			
+			visionRayCast(x, y, x + 3, y + 3);
+			visionRayCast(x, y, x + 3, y - 3);
+			visionRayCast(x, y, x - 3, y + 3);
+			visionRayCast(x, y, x - 3, y - 3);
+		}
+
 	}
 
 	/**Used http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/

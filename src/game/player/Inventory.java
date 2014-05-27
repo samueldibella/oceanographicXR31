@@ -42,7 +42,7 @@ public class Inventory {
 
 			do {
 				if(referentFetch(toBe) != null || toBe == 'w' || toBe == 'a' 
-						|| toBe == 's' || toBe == 'd' || toBe == 'g') {
+						|| toBe == 's' || toBe == 'd' || toBe == 'g' || toBe == 'e') {
 					referenceClear = false;
 					toBe = (char) ((Math.random() * 25) + 97);
 				} else {
