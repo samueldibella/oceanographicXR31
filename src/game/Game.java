@@ -42,7 +42,7 @@ public class Game extends PApplet {
 
 		String[] fontList = PFont.list();
 		
-		System.out.println(fontList[0]);
+		//System.out.println(fontList[0]);
 		frameRate(20);
 		size(1400, 650);
 		background(0);

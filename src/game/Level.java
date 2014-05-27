@@ -189,7 +189,7 @@ public class Level extends PApplet{
 	void updateScent() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		int scentRate = 1000;
+		int scentRate = 100000;
 		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
@@ -200,8 +200,7 @@ public class Level extends PApplet{
 					int dy = j - y;
 					float totalDelta = (float) (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));			
 					
-					
-					design[j][i].setScent((((scentRate - totalDelta) * 100) - ((j + i) * .1f)));
+					design[j][i].setScent(((scentRate - totalDelta)) - ((j + i) * .1f));
 				}
 			}
 		}

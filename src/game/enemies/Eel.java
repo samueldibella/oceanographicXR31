@@ -4,6 +4,7 @@ import game.Animus;
 import game.Game;
 import game.Space;
 import game.enums.SpaceType;
+import game.enums.Visibility;
 
 public class Eel extends Animus {
 	int chance;
@@ -24,10 +25,17 @@ public class Eel extends Animus {
 
 	@Override
 	public void move(int direction) {
-		//chance = (int) Math.random() * 2;
+		int dx = Game.hero.getX() - x;
+		int dy = Game.hero.getY() - y;
+		float distanceFromPlayer = (float) Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)));
+		
 		normalize();
 		
-		wander(type, lethargy);
+		if(Game.dungeon[currentLevel].getDesign()[y][x].getVisibility() == Visibility.INSIGHT && distanceFromPlayer < 4) {
+			flee();
+		} else {
+			wander(type, lethargy);
+		}
 		
 		shock();	
 	}

@@ -32,9 +32,6 @@ public class Barricuda extends Animus{
 		} else {
 			wander(type, lethargy);
 		}
-		
-		
-
 	}
 	
 }

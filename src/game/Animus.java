@@ -148,8 +148,9 @@ public abstract class Animus {
 		
 		for(int j = -1; j <= 1; j++) {
 			for(int i = -1; i <= 1; i++) {
-				if(level.isInLevel(y + j, x + i)) {
-					neighbors[buildIndex++] = level.getDesign()[y + j][x + i];
+				if(level.isInLevel(x + i, y + j)) {
+					neighbors[buildIndex] = level.getDesign()[y + j][x + i];
+					buildIndex++;
 				}	
 			}
 		}
@@ -170,6 +171,41 @@ public abstract class Animus {
 			y = neighbors[maxScent].getY();
 			
 			neighbors[maxScent].setSpace(type);
+		}
+	}
+	
+	public void flee() {
+		Level level = Game.dungeon[currentLevel];
+		Space[] neighbors = new Space[9];
+		int buildIndex = 0;
+		int minScent = -1;
+		
+		for(int j = -1; j <= 1; j++) {
+			for(int i = -1; i <= 1; i++) {
+				if(level.isInLevel(x + i, y + j)) {
+					neighbors[buildIndex++] = level.getDesign()[y + j][x + i];
+				}	
+			}
+		}
+		
+		for(int i = 0; i < 8; i++) {
+			if(neighbors[i] != null && neighbors[i].getSpace() != SpaceType.WALL && minScent == -1) {
+				minScent = i;
+				//bug
+			} else if(neighbors[i] != null && minScent != -1 && neighbors[i].getScent() < neighbors[minScent].getScent() 
+					&& neighbors[i].getSpace() != SpaceType.WALL) {
+				minScent = i;
+			}
+		}
+		
+		if(minScent != -1) {
+			//System.out.println("here");
+			level.getDesign()[y][x].setSpace(SpaceType.EMPTY);
+			
+			x = neighbors[minScent].getX();
+			y = neighbors[minScent].getY();
+			
+			neighbors[minScent].setSpace(type);
 		}
 
 	}
