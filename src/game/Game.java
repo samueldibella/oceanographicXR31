@@ -1,12 +1,17 @@
 package game;
 
+import java.awt.Color;
+
 import game.enums.InputMode;
 import game.enums.Mode;
+import game.enums.SpaceType;
+import game.enums.Visibility;
 import game.player.Hit;
 import game.player.Player;
 import game.player.Wounds;
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PImage;
 
 
 @SuppressWarnings("serial")
@@ -225,19 +230,37 @@ public class Game extends PApplet {
 				line(hit.getX() - hit.getDeviation(), 0, hit.getX() + hit.getDeviation(), 1400);
 				noStroke();
 				break;	
-
-			case EEL:
-				stroke(255);
-				noFill();
-				arc(hit.getDeviationX(), hit.getDeviationY(), hit.getDeviationX2(), hit.getDeviationY2(), 
-						0, hit.getCurrentRadius());
-				noStroke();
-				break;
+				
 			default:
 				break;
 
 			}
 		}
+
+		int yGet;
+		int xGet;
+		int ySet;
+		int xSet;
+		
+		loadPixels();
+		
+		int white = color(0);
+		
+		for(int i = 0; i < Hit.numOfEelHits; i++) {
+			for(int j = 0; j < 10; j++) {
+				yGet = (int) (Math.random() * 450) + 50;
+				xGet = (int) (Math.random() * 1200) + 50;
+				ySet = (int) (Math.random() * 450) + 50;
+				xSet = (int) (Math.random() * 1200) + 50;
+				PImage glitch = get(xGet, yGet, 300, 50);
+				
+				
+				set(xSet, ySet,  white);
+				//set(xSet, ySet, glitch);
+			}
+		} 
+		
+		updatePixels();
 	}
 
 	private void pDisplay(Level level) {
@@ -313,6 +336,11 @@ public class Game extends PApplet {
 				default:
 					fill(255, opacity);
 				}
+				
+				if(display[j][i].getSpace() != SpaceType.WALL && display[j][i].getSpace() != SpaceType.EXIT 
+						&& display[j][i].getVisibility() == Visibility.VISITED) {
+					fill(255, opacity);
+				}
 
 				//hero display
 				if(j == hero.getY() && i == hero.getX()) {
@@ -338,7 +366,6 @@ public class Game extends PApplet {
 	}
 
 	private String buffer() {
-		// TODO Auto-generated method stub
 		String output = "     Environmental Factors\n";
 		output += "--------------------------------------\n";
 		output += textBuffer;
@@ -426,6 +453,10 @@ public class Game extends PApplet {
 		}
 	}
 
+	/**UI element for player
+	 * 
+	 * @return
+	 */
 	public String localRadar() {
 		String radar = "XXXXXXXXX\n";
 		Level level = Game.dungeon[playerLevel]; 

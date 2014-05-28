@@ -9,11 +9,16 @@ public class Hit {
 	int x;
 	int y;
 	SpaceType type;
+	
 	float deviation;
+	
 	float deviationY;
-	float deviationY2;
 	float deviationX;
+	
+	float deviationY2;
 	float deviationX2;
+	
+	public static int numOfEelHits = 0;
 	
 	@SuppressWarnings("incomplete-switch")
 	Hit(SpaceType type2) {
@@ -24,22 +29,22 @@ public class Hit {
 		case JELLYFISH:
 			maxRadius = (int) (Math.random() * 40);
 			currentRadius = 1;
+			
+			//size of first circle
 			deviationX = (int) (Math.random() * 1399);
 			deviationY = (int) (Math.random() * 699);
+			
+			//size of second circle
 			deviationX2 = (int) (Math.random() * 1399);
 			deviationY2 = (int) (Math.random() * 699);
 			break;
 		case EEL:
-			maxRadius = (float) (Math.random() * 2 * (Math.PI));
-			currentRadius = (float) (Math.random() * 2 * (Math.PI));
+			numOfEelHits++;
 			
-			//eclipse coordinates
-			deviationX = (int) (Math.random() * 1399);
-			deviationY = (int) (Math.random() * 699);
-			
-			//eclipse size
-			deviationX2 = (int) (Math.random() * 80);
-			deviationY2 = (int) (Math.random() * 80);
+			//reference (<= 3 eels = random pixel shifts, > 3 = large chunks
+			deviation = numOfEelHits;
+			deviationX = (int) (Math.random() * 1000) + 500;
+
 			break;
 			
 		case SHARK:
