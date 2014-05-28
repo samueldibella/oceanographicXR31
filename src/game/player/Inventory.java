@@ -42,7 +42,7 @@ public class Inventory {
 
 			do {
 				if(referentFetch(toBe) != null || toBe == 'w' || toBe == 'a' 
-						|| toBe == 's' || toBe == 'd' || toBe == 'g') {
+						|| toBe == 's' || toBe == 'd' || toBe == 'g' || toBe == 'e') {
 					referenceClear = false;
 					toBe = (char) ((Math.random() * 25) + 97);
 				} else {
@@ -70,9 +70,8 @@ public class Inventory {
 					Game.inputMode = InputMode.DRILL;
 					break;
 				case ADRL:
-					Game.addBuffer("The world blurs, and you tense.");
-					Game.inputMode = InputMode.ADRL;
-					Game.druggedTurns = 5;
+					Game.addBuffer("The battery slots into your pack.");
+					Game.hero.battery = 100;
 					break;
 				case ECHO:
 					Game.dungeon[Game.playerLevel].echo();
@@ -111,6 +110,7 @@ public class Inventory {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String output = "\tInventory\n";
 		for(int i = 0; i < inventoryIndex; i++) {

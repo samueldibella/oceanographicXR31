@@ -3,7 +3,7 @@ package game.enums;
 public enum ItemType {
 	DRILL("^","Mining drill"),
 	ECHO("%","Echo. Map"),
-	ADRL("|","Stimulant"),
+	ADRL("|","Battery"),
 	RELAY("&","Comm. Relay"),
 	OXYGEN("=","Oxygen Tank");
 	
@@ -19,6 +19,7 @@ public enum ItemType {
 		return description;
 	}
 	
+	@Override
 	public String toString() {
 		return script;
 	}

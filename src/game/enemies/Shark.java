@@ -3,7 +3,6 @@ package game.enemies;
 import game.Animus;
 import game.Game;
 import game.enums.SpaceType;
-import game.enums.Visibility;
 
 public class Shark extends Animus {
 	int chance;
@@ -24,7 +23,17 @@ public class Shark extends Animus {
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
+	@Override
 	public void move(int direction) {
-		seek();
+		int dx = Game.hero.getX() - x;
+		int dy = Game.hero.getY() - y;
+		float distanceFromPlayer = (float) Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)));
+		
+		if(distanceFromPlayer < 15 && Game.hero.getLights()) {
+			seek();
+		} else {
+			wander(type, lethargy);
+		}
+
 	}
 }

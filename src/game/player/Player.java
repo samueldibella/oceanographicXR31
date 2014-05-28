@@ -3,7 +3,6 @@ import game.Animus;
 import game.Game;
 import game.Level;
 import game.Space;
-import game.enums.ItemType;
 import game.enums.SpaceType;
 
 public class Player extends Animus{
@@ -11,9 +10,14 @@ public class Player extends Animus{
 	int inventoryIndex;
 	Wounds body;
 	boolean isAlive;
+	boolean lightsOn;
 	int chance;
+	float battery;
+	int visionRange;
 	
 	public Player(int xCo, int yCo) {
+		visionRange = 10;
+		battery = 1;
 		hp = 100;
 		speed = 50;
 		dmg = 20;
@@ -25,8 +29,8 @@ public class Player extends Animus{
 		x = xCo;
 		y = yCo;
 		isAlive = true;
+		lightsOn = true;
 		chance = 0;
-
 	}
 
 	@Override
@@ -42,6 +46,11 @@ public class Player extends Animus{
 		case 1:
 			if(map[y - 1][x].getSpace() != SpaceType.WALL) {
 				y--;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -56,6 +65,11 @@ public class Player extends Animus{
 		case 2:
 			if(map[y][x + 1].getSpace() != SpaceType.WALL) {
 				x++;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -70,6 +84,11 @@ public class Player extends Animus{
 		case 3:
 			if(map[y + 1][x].getSpace() != SpaceType.WALL) {
 				y++;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -84,13 +103,18 @@ public class Player extends Animus{
 		case 4:
 			if(map[y][x - 1].getSpace() != SpaceType.WALL) {
 				x--;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
-				Game.addBuffer("Your manifest destiny falls flat.");
+				Game.addBuffer("This geometry is confusing.");
 			}
 			break;
 
@@ -100,13 +124,13 @@ public class Player extends Animus{
 				currentLevel++;
 				Game.playerLevel++;
 				Game.getDungeon()[currentLevel] = new Level(10, x, y, currentLevel);
-				hp = 100;
+				//hp = 100;
 				Game.setPlayerTurn(false); 
 				Game.addBuffer("You find a crevasse opening.");
-			} else if (currentLevel == 24){
+			} else if (currentLevel == 13){
 				currentLevel++;
 				Game.playerLevel++;
-				hp = 100;
+				//hp = 100;
 				Game.setPlayerTurn(false);
 				Game.setPlayerWin(true);
 				Game.addBuffer("The water is still down here.");
@@ -134,6 +158,22 @@ public class Player extends Animus{
 			} else {
 				Game.addBuffer("There's nothing there.");
 			}
+			
+			if(lightsOn) {
+				battery -= .01;
+			}
+			
+			break;
+			
+		//SPACE: the lights
+		case 7:
+			if(lightsOn) {
+				Game.addBuffer("Your lights snap off.");
+			} else {
+				Game.addBuffer("A low hum as lights return.");
+			}
+			
+			lightsOn = !lightsOn;
 			break;
 		}	
 
@@ -152,7 +192,7 @@ public class Player extends Animus{
 		output += "--------------------------\n";
 		output += "Level: " + (currentLevel + 1) + "\n";
 		output += "Oxygen: " + hp + "%\n";
-		output += "X: " + x + " Y: " + y + "\n";
+		output += String.format("Light Battery: %.2f \n", battery);
 		output += "--------------------------\n";
 
 		return output;
@@ -162,6 +202,7 @@ public class Player extends Animus{
 		return inventory;
 	}
 
+	@Override
 	public boolean getAlive() {
 		return isAlive;
 	}
@@ -170,15 +211,26 @@ public class Player extends Animus{
 		return body;
 	}
 
+	@Override
 	public int getX() {
 		return x;
 	}
 
+	@Override
 	public int getY() {
 		return y;
 	}
 
 	public int getCurrentLevel() {
 		return currentLevel;
+	}
+	
+	public boolean getLights() {
+		return lightsOn;
+	}
+	
+	public int getVision() {
+		
+		return (int) ((int) visionRange * battery);
 	}
 }

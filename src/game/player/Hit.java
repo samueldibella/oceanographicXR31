@@ -1,20 +1,29 @@
 package game.player;
 
+import processing.core.PImage;
 import game.Game;
 import game.enums.SpaceType;
 
 public class Hit {
 	float maxRadius;
-	float currentRadius;
+	public float currentRadius;
 	int x;
 	int y;
 	SpaceType type;
+	
 	float deviation;
+	
 	float deviationY;
-	float deviationY2;
 	float deviationX;
+	
+	float deviationY2;
 	float deviationX2;
 	
+	PImage img;
+	
+	public static int numOfEelHits = 0;
+	
+	@SuppressWarnings("incomplete-switch")
 	Hit(SpaceType type2) {
 		x = Game.screenX;
 		y = Game.screenY;
@@ -23,22 +32,21 @@ public class Hit {
 		case JELLYFISH:
 			maxRadius = (int) (Math.random() * 40);
 			currentRadius = 1;
+			
+			//size of first circle
 			deviationX = (int) (Math.random() * 1399);
 			deviationY = (int) (Math.random() * 699);
+			
+			//size of second circle
 			deviationX2 = (int) (Math.random() * 1399);
 			deviationY2 = (int) (Math.random() * 699);
 			break;
 		case EEL:
-			maxRadius = (float) (Math.random() * 2 * (Math.PI));
-			currentRadius = (float) (Math.random() * 2 * (Math.PI));
+			numOfEelHits++;
 			
-			//eclipse coordinates
-			deviationX = (int) (Math.random() * 1399);
-			deviationY = (int) (Math.random() * 699);
-			
-			//eclipse size
-			deviationX2 = (int) (Math.random() * 80);
-			deviationY2 = (int) (Math.random() * 80);
+			//reference (<= 3 eels = random pixel shifts, > 3 = large chunks
+			deviationX = (int) (Math.random() * 1000) + 500;
+
 			break;
 			
 		case SHARK:
@@ -48,21 +56,37 @@ public class Hit {
 			
 		case BARRICUDA:
 			maxRadius = (int) (Math.random());
-			currentRadius = 1;
+			currentRadius = 0;
 			
-			//base delta y for crack growing
-			deviationY = 1;
+			deviation = (float) (Math.random() * 40) - 20;
 			
-			//x deviation of crack
-			deviation = (int) (((Math.random() * 200)));
+			//first spot == x, y
 			
-			if(maxRadius == 0) {
-				deviation += -1;
-			}
-			break;
+			//second
+			deviationX = x + (int) ((Math.random() * 30)) * 2;
+			deviationY = y + (int) ((Math.random() * 30)) * 2;
+			
+			//third
+			deviationX2 = x - (int) (Math.random() * 30);
+			deviationY2 = y - (int) (Math.random() * 30);
+
 		}
 		
 		type = type2;
+	}
+	
+	public void increment() {
+		switch(type) {
+		case SHARK:
+			currentRadius++;
+			break;
+		case BARRICUDA:
+			currentRadius++;
+			break;
+		default:
+			currentRadius++;
+			break;
+		}
 	}
 	
 	//jellyfish only
@@ -100,14 +124,6 @@ public class Hit {
 		return maxRadius;
 	}
 	
-	public void incrementCrack(double d) {
-		deviationY += d;
-	}
-	
-	public void incrementCurrentRadius(double d) {
-		currentRadius += d;
-	}
-	
 	public float getCurrentRadius() {
 		return currentRadius;
 	}
@@ -116,6 +132,7 @@ public class Hit {
 		return type;
 	}
 	
+	@Override
 	public String toString() {
 		return type.toString();
 	}

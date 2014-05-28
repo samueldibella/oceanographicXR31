@@ -7,7 +7,6 @@ import game.enums.InputMode;
 import game.enums.ItemType;
 import game.enums.SpaceType;
 import game.enums.Visibility;
-import game.player.Player;
 
 import java.util.ArrayList;
 
@@ -21,6 +20,7 @@ import processing.core.PApplet;
  * @see SetOfSpaces
  * @see InputOutput
  */
+@SuppressWarnings("serial")
 public class Level extends PApplet{
 	public static final int X_SIZE = 70;
 	public static final int Y_SIZE = 40;
@@ -41,7 +41,6 @@ public class Level extends PApplet{
 	 */
 	public Level(int level, int x, int y, int currentLevel) {
 		index = currentLevel;
-		stinky = new ArrayList<Space>();
 		difficulty = (int) ((level + 10) * Math.random());
 		design = new Space[Y_SIZE][X_SIZE];
 		exitPlaced = false;
@@ -88,7 +87,6 @@ public class Level extends PApplet{
 		design[floor2.getY()][floor2.getX()].setSpace(SpaceType.EXIT);
 
 		assertWalls();
-
 
 		for(int j = 0; j < Y_SIZE; j++) {
 			for(int i = 0; i < X_SIZE; i++) {
@@ -165,7 +163,7 @@ public class Level extends PApplet{
 	//orders all enemies on level to execute their move
 	//manages monster overlap and death with player hits
 	void monsterMove() {
-		//updateScent();
+		updateScent();
 
 		for(int i = 0; i < livingBeings.size(); i++) {
 			int chance = (int) (Math.random() * 9);
@@ -183,31 +181,37 @@ public class Level extends PApplet{
 		Game.setPlayerTurn(true);
 	}
 
-	/*
+	/**Refreshes scent map for AI seek function
+	 * A space's scent will be a function of the distance from the player,
+	 * and some relation to it's overall position, to insure that there are no
+	 * tiles with the same scent value.
+	 */
 	void updateScent() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		stinky = new ArrayList<Space>();
+		int scentRate = 100000;
 		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
-				if(design[j][i].getSpace() == SpaceType.WALL) {
+				if(design[j][i].getSpace() == SpaceType.WALL || design[j][i].getSpace() == SpaceType.EXIT) {
 					design[j][i].setScent(0);
-				}
-				if(design[j][i].getScent() < 10) {
-					design[j][i].setScent(0);
-				} else if(design[j][i].getScent() > 0) {
-					design[j][i].passScent();
-					System.out.println("washing stinck");
-					design[j][i].setScent(design[j][i].getScent() - 4);
+				} else {
+					int dx = i - x;
+					int dy = j - y;
+					float totalDelta = (float) (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));			
+					
+					design[j][i].setScent(((scentRate - totalDelta)) - ((j + i) * .1f));
 				}
 			}
 		}
+	}
 
-		design[y][x].instillScent(100);
-		stinky.add(design[y][x]);
-	} */
-
+	/**Removes creatures that intersect with player, and adds their
+	 * hit effect to general player state
+	 * 
+	 * @param corpus
+	 * @param livingIndex
+	 */
 	private void monsterCollision(Animus corpus, int livingIndex) {
 		if(corpus.getX() == Game.hero.getX() && (corpus.getY() == Game.hero.getY())) {
 			switch (corpus.getType()) {
@@ -237,6 +241,10 @@ public class Level extends PApplet{
 		}
 	}
 
+	/**Cuts a hole in the level in the cardinal directions
+	 * 
+	 * @param direction
+	 */
 	public void drill(int direction) {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
@@ -302,6 +310,9 @@ public class Level extends PApplet{
 		}
 	}
 	
+	/**
+	 * In effect reveals the whole level. Used for map item.
+	 */
 	public void echo() {
 		for(int j = 1; j < Y_SIZE; j++) {
 			for(int i = 1; i < X_SIZE; i++) {
@@ -310,10 +321,14 @@ public class Level extends PApplet{
 		}
 	}
 
+	/**
+	 * Between each player turn, refreshes the visibility of tiles
+	 */
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-
+		int visionRange = Game.hero.getVision();
+		
 		for(int j = 0; j < Level.Y_SIZE; j++) {
 			for(int i = 0; i < Level.X_SIZE; i++) {
 				if(design[j][i].getVisibility() == Visibility.INSIGHT) {
@@ -321,194 +336,100 @@ public class Level extends PApplet{
 				}
 			}
 		}
-
-		/* for the dream of real raycasting
-		for(int i = 0; i < X_SIZE - 1; i++) {
-			visionRayCast(x,y,i, 0);
-		}
-
-		for(int i = 0; i < X_SIZE - 1; i++) {
-			visionRayCast(x,y,i, Y_SIZE - 1);
-		}
-
-		for(int j = 0; j < Y_SIZE - 1; j++) {
-			visionRayCast(x,y,0,j);
-		}
-
-		for(int j = 0; j < Y_SIZE - 1; j++) {
-			visionRayCast(x,y,Y_SIZE - 1,j);
-		}*/
-
-		//leftwards fauxcast
-		for(int j = - 1; j <= 1; j += 2) {
-			for(int i = x; i > x - 10; i--) {
-				if(isInLevel(i, y + j)) {
-					design[y + j][i].setVisibility(Visibility.INSIGHT);
-					if(design[y + j][i].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}		
+		
+		//only vision with lights on
+		if(Game.hero.getLights() == true) {
+			for(int j = -5 -(visionRange / 2); j <= (visionRange / 2) + 5; j++) {
+				//left and right side
+				visionRayCast(x, y, x - visionRange, y + j);
+				visionRayCast(x, y, x + visionRange, y + j);
+				
+				//up and down
+				visionRayCast(x, y, x + j, y - visionRange);
+				visionRayCast(x, y, x + j, y + visionRange);
 			}
+			
+			visionRayCast(x, y, x + 3, y + 3);
+			visionRayCast(x, y, x + 3, y - 3);
+			visionRayCast(x, y, x - 3, y + 3);
+			visionRayCast(x, y, x - 3, y - 3);
+		}
+
+	}
+
+	/**Used http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
+	 * primitive raycast for player vision
+	 * @param x0 start x coordinate
+	 * @param y0 start y coordinate
+	 * @param x3 end 
+	 * @param y3 end
+	 */
+	public void visionRayCast(int x0, int y0,  int x3, int y3) {
+		int w = x3 - x0;
+		int h = y3 - y0;
+		
+		int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+		
+		//octant selector
+		if(w < 0) {
+			dx1 = -1;
+		} else if( w > 0) {
+			dx1 = 1;
 		}
 		
-		for(int i = x; i > x - 11; i--) {
-			if(isInLevel(i, y )) {
-				design[y][i].setVisibility(Visibility.INSIGHT);
-				if(design[y][i].getSpace() == SpaceType.WALL) {
-					break;
-				}
-			}		
+		if(h < 0) {
+			dy1 = -1;
+		} else if (h > 0) {
+			dy1 = 1;
 		}
-
-		//to the right
-		visionRayCast(x, y, x + 10 , y - 1);
-		visionRayCast(x, y, x + 11 , y);
-		visionRayCast(x, y, x + 10, y + 1);
-
-		//to the left
-		//visionRayCast(x, y, x - 10, y - 1);
-		//visionRayCast(x, y, x - 10, y);
-		//visionRayCast(x, y, x - 10, y + 1);
-
-		//down
-		visionRayCast(x - 1, y, x - 1, y + 10);
-		visionRayCast(x, y, x, y + 11);
-		visionRayCast(x + 1, y, x + 1, y + 10);
-
-		//up
-		visionRayCast(x - 1, y, x - 1, y - 10);
-		visionRayCast(x, y, x, y - 11);
-		visionRayCast(x + 1, y, x + 1, y - 10);
-
-		//diagonals 
-		visionRayCast(x, y, x + 3, y - 3);
-		visionRayCast(x, y, x + 3, y + 3);
-		visionRayCast(x, y, x - 3, y + 3);
-		visionRayCast(x, y, x - 3, y - 3); 
-
-	}
-
-	//attempt to tell if space between two points is totally empty
-	//based off wikipedia entry for bresenham's line theorem &
-	//http://deepnight.net/bresenham-magic-raycasting-line-of-sight-pathfinding/
-	public void visionRayCast(int x0, int y0,  int x3, int y3) {
-		int x1 = x0;
-		int y1 = y0;
-		int x2 = x3;
-		int y2 = y3;
-
-		while(!isInLevel(x2, y2)) {
-			if(x2 < 0) {
-				x2++;
-			}
-			if(x2 > X_SIZE - 1) {
-				x2--;
-			}
-			if(y2 < 0) {
-				y2++;
-			}
-			if(y2 > Y_SIZE - 1) {
-				y2--;
-			}
-		} 
-
-		//vertical lines
-		if(x2 - x2 == 0) {
-			int deltaY = y2 - y1;
-
-			//upward
-			if(deltaY > 0) {
-				for(int i = y1; i < y2; i++ ) {
-					design[i][x1].setVisibility(Visibility.INSIGHT);
-					if(design[i][x1].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
-
-				//downwards
-			} else if(deltaY < 0) {
-				for(int i = y1; i > y2; i--) {
-					design[i][x1].setVisibility(Visibility.INSIGHT);
-					if(design[i][x1].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
-			}
+		
+		if(w < 0) {
+			dx2 = -1;
+		} else if(w > 0) {
+			dx2 = 1;
 		}
-
-		float error = 0;
-		int temp;
-		int yStep;
-		boolean swapXY = Math.abs(x1 - x2) > Math.abs(x1 - x2);
-
-		if(swapXY) {
-			temp = x1; x1 = y1; y1 = temp;
-			temp = x1; x1 = y1; y1 = temp;
-		}
-
-		if( x1 > x2) {
-			temp = x1; x1 = x2; x2 = temp;
-			temp = y1; y1 = y2; y1 = temp;
-		}
-
-		int deltaX = (x2 - x1);
-		int deltaY = Math.abs(y2 - y1);
-		int y = y1;
-
-		if(y1 < y2) {
-			yStep = 1;
-		} else {
-			yStep = -1;
-		}
-
-		if(swapXY) {
-			for(int x = x1; x < x2; x++) {
-				design[y][x].setVisibility(Visibility.INSIGHT);
-				if(design[y][x].getSpace() == SpaceType.WALL) {
-					break;
-				}
-
-				error -= deltaY;
-				if(error < 0) {
-					y += yStep;
-					error += deltaX;
-				}
+		
+		int longest = Math.abs(w);
+		int shortest = Math.abs(h);
+		
+		if(!(longest > shortest)) {
+			longest = Math.abs(h);
+			shortest = Math.abs(w);
+			
+			if(h < 0) {
+				dy2 = -1;
+			} else if (h > 0) {
+				dy2 = 1;
 			}
-
-			if(deltaX == 0) {
-				for(int x = x1; x < x2; x++) {
-					design[y][x].setVisibility(Visibility.INSIGHT);
-					if(design[y][x].getSpace() == SpaceType.WALL) {
-						break;
-					}
+			
+			dx2 = 0;
+		}
+		
+		int numerator = longest >> 1;
+		
+		for(int i = 0; i <= longest; i++) {
+			if(isInLevel(x0, y0) && design[y0][x0].getSpace() != SpaceType.WALL) {
+				design[y0][x0].setVisibility(Visibility.INSIGHT);
+				numerator += shortest;
+				
+				if(!(numerator < longest)) {
+					numerator -= longest;
+					x0 += dx1;
+					y0 += dy1;
+				} else {
+					x0 += dx2;
+					y0 += dy2;
 				}
-			}
-		} else {
-			for(int x = x1; x < x2; x++) {
-				design[y][x].setVisibility(Visibility.INSIGHT);
-				if(design[y][x].getSpace() == SpaceType.WALL) {
-					break;
-				}
-
-				error -= deltaY;
-				if(error < 0) {
-					y += yStep;
-					error += deltaX;
-				}
-
-			}
-
-			if(deltaX == 0) {
-				for(int x = x1; x < x2; x++) {
-					design[y][x].setVisibility(Visibility.INSIGHT);
-					if(design[y][x].getSpace() == SpaceType.WALL) {
-						break;
-					}
-				}
+			} else if( design[y0][x0].getSpace() == SpaceType.WALL){
+				design[y0][x0].setVisibility(Visibility.INSIGHT);
+				break;
+			} else {
+				break;
 			}
 		}
 	}
 
+	//basic test to insure no null reference passes
 	public boolean isInLevel(int x, int y) {
 		if(y < 0 || y > Y_SIZE - 1) {
 			return false;
@@ -522,6 +443,7 @@ public class Level extends PApplet{
 	}
 
 	//total empty spaces next to passed space
+	//all eight
 	public int localEmpty(Space p) {
 		int emptySpaces = 0;
 		int yScale;
@@ -545,7 +467,7 @@ public class Level extends PApplet{
 	}
 
 	/**Checks a points neighbors for ones of type EMPTY
-	 * and returns a list of them.
+	 * and returns a list of them. Only cardinal directions
 	 * @param p reference point
 	 * @return list of empty neighbor spaces
 	 */
@@ -579,7 +501,6 @@ public class Level extends PApplet{
 
 		return emptyPoints;
 	}
-
 
 	@Override
 	public String toString() {

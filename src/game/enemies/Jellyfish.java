@@ -20,6 +20,7 @@ public class Jellyfish extends Animus{
 		currentLevel = Game.hero.getCurrentLevel();
 	}
 
+	@Override
 	public void move(int direction) {
 			wander(type, lethargy);
 		}
