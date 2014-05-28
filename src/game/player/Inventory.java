@@ -70,9 +70,8 @@ public class Inventory {
 					Game.inputMode = InputMode.DRILL;
 					break;
 				case ADRL:
-					Game.addBuffer("The world blurs, and you tense.");
-					Game.inputMode = InputMode.ADRL;
-					Game.druggedTurns = 5;
+					Game.addBuffer("The battery slots into your pack.");
+					Game.hero.battery = 100;
 					break;
 				case ECHO:
 					Game.dungeon[Game.playerLevel].echo();

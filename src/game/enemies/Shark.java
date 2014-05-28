@@ -29,7 +29,7 @@ public class Shark extends Animus {
 		int dy = Game.hero.getY() - y;
 		float distanceFromPlayer = (float) Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)));
 		
-		if(distanceFromPlayer < 15) {
+		if(distanceFromPlayer < 15 && Game.hero.getLights()) {
 			seek();
 		} else {
 			wander(type, lethargy);

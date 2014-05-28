@@ -98,38 +98,6 @@ public class Game extends PApplet {
 				}
 
 				break;
-			case ADRL:
-				fill(255, 100);
-				rect(0,0, 1400, 650);
-				
-				if(playerTurn == true && moveEntered == true) {
-					for(int i = 0; i < 3; i++) {
-						fill(255, 100);
-						rect(0,0, 1400, 650);
-						hero.move(result);
-
-						dungeon[hero.getCurrentLevel()].updateVisibility();
-
-						pDisplay(dungeon[hero.getCurrentLevel()]);
-						hitDisplay();
-					}
-					moveEntered = false;
-				} else if(playerTurn == false){
-					dungeon[hero.getCurrentLevel()].monsterMove();	
-					druggedTurns--;
-					String output ="";
-					for(int i = 0; i < 20; i++) {
-						output += (char) (Math.random() * 126);
-					}
-					Game.addBuffer(output);
-				}
-				
-				if(druggedTurns <= 0) {
-					inputMode = InputMode.NORMAL;
-					Game.addBuffer("You come to....");
-				}
-				break;
-				
 			case DRILL:
 				dungeon[playerLevel].drill(result);
 				break;
@@ -227,7 +195,17 @@ public class Game extends PApplet {
 
 			case BARRICUDA:
 				stroke(255);
-				line(hit.getX() - hit.getDeviation(), 0, hit.getX() + hit.getDeviation(), 1400);
+
+				line(hit.getX(), hit.getY(), hit.getDeviationX(), hit.getDeviationY());
+				line(hit.getX(), hit.getY(), hit.getDeviationX2() + hit.getDeviation(), hit.getDeviationY2() - hit.getDeviation());
+				
+				if(hit.currentRadius == 10) {
+					line(hit.getDeviationX(), hit.getDeviationY(), 
+							hit.getDeviationX() + (hit.getDeviation() * 4), hit.getDeviationY() + (hit.getDeviation() * 4) );
+					line(hit.getDeviationX2(), hit.getDeviationY2(),
+							hit.getDeviationX() + (hit.getDeviation() * 3), hit.getDeviationY() + (hit.getDeviation() * 4) );
+				}
+				
 				noStroke();
 				break;	
 				
@@ -237,6 +215,7 @@ public class Game extends PApplet {
 			}
 		}
 
+		//distort screen proportional to eel presence
 		int yGet;
 		int xGet;
 		int ySet;
@@ -254,9 +233,7 @@ public class Game extends PApplet {
 				xSet = (int) (Math.random() * 1200) + 50;
 				PImage glitch = get(xGet, yGet, 300, 50);
 				
-				
-				set(xSet, ySet,  white);
-				//set(xSet, ySet, glitch);
+				image(glitch, xSet, ySet);
 			}
 		} 
 		
@@ -278,7 +255,6 @@ public class Game extends PApplet {
 		text("Oceanographic Expedition X R31", 575, 20);
 		text(buffer(), 1200, 20);
 
-		textFont(fixed);
 		text("       Local Sonar", 1200, 415);
 		String radar = localRadar();
 		int radarX = 1200;
@@ -328,8 +304,7 @@ public class Game extends PApplet {
 					fill(176,100,65, opacity);
 					break;
 				case JELLYFISH:
-					fill(176,196,222, opacity);
-					break;
+					//handled below
 				case WALL:
 					fill(0,139,139, opacity);
 					break;
@@ -353,6 +328,15 @@ public class Game extends PApplet {
 				} else if (display[j][i].getItem() != null){
 					fill(255,0,0,opacity);
 					text(display[j][i].toString(), baseX, baseY);	
+				} else if (display[j][i].getSpace() == SpaceType.JELLYFISH){
+					//special case for jellyfish
+					if(Game.hero.getLights()) {
+						text(SpaceType.EMPTY.toString(), baseX, baseY);
+					} else {
+						fill(176,196,222, 240);
+						text(SpaceType.JELLYFISH.toString(), baseX, baseY);
+						
+					}
 				} else {
 					text(display[j][i].toString(), baseX, baseY);	
 				}

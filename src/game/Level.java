@@ -193,7 +193,7 @@ public class Level extends PApplet{
 		
 		for(int j = 0; j < Y_SIZE - 1; j++) {
 			for(int i = 0; i < X_SIZE - 1; i++) {
-				if(design[j][i].getSpace() == SpaceType.WALL) {
+				if(design[j][i].getSpace() == SpaceType.WALL || design[j][i].getSpace() == SpaceType.EXIT) {
 					design[j][i].setScent(0);
 				} else {
 					int dx = i - x;
@@ -327,7 +327,7 @@ public class Level extends PApplet{
 	public void updateVisibility() {
 		int x = Game.hero.getX();
 		int y = Game.hero.getY();
-		int visionRange = 10;
+		int visionRange = Game.hero.getVision();
 		
 		for(int j = 0; j < Level.Y_SIZE; j++) {
 			for(int i = 0; i < Level.X_SIZE; i++) {

@@ -1,11 +1,12 @@
 package game.player;
 
+import processing.core.PImage;
 import game.Game;
 import game.enums.SpaceType;
 
 public class Hit {
 	float maxRadius;
-	float currentRadius;
+	public float currentRadius;
 	int x;
 	int y;
 	SpaceType type;
@@ -17,6 +18,8 @@ public class Hit {
 	
 	float deviationY2;
 	float deviationX2;
+	
+	PImage img;
 	
 	public static int numOfEelHits = 0;
 	
@@ -42,7 +45,6 @@ public class Hit {
 			numOfEelHits++;
 			
 			//reference (<= 3 eels = random pixel shifts, > 3 = large chunks
-			deviation = numOfEelHits;
 			deviationX = (int) (Math.random() * 1000) + 500;
 
 			break;
@@ -54,21 +56,37 @@ public class Hit {
 			
 		case BARRICUDA:
 			maxRadius = (int) (Math.random());
-			currentRadius = 1;
+			currentRadius = 0;
 			
-			//base delta y for crack growing
-			deviationY = 1;
+			deviation = (float) (Math.random() * 40) - 20;
 			
-			//x deviation of crack
-			deviation = (int) (((Math.random() * 200)));
+			//first spot == x, y
 			
-			if(maxRadius == 0) {
-				deviation += -1;
-			}
-			break;
+			//second
+			deviationX = x + (int) ((Math.random() * 30)) * 2;
+			deviationY = y + (int) ((Math.random() * 30)) * 2;
+			
+			//third
+			deviationX2 = x - (int) (Math.random() * 30);
+			deviationY2 = y - (int) (Math.random() * 30);
+
 		}
 		
 		type = type2;
+	}
+	
+	public void increment() {
+		switch(type) {
+		case SHARK:
+			currentRadius++;
+			break;
+		case BARRICUDA:
+			currentRadius++;
+			break;
+		default:
+			currentRadius++;
+			break;
+		}
 	}
 	
 	//jellyfish only
@@ -104,14 +122,6 @@ public class Hit {
 	
 	public float getMax() {
 		return maxRadius;
-	}
-	
-	public void incrementCrack(double d) {
-		deviationY += d;
-	}
-	
-	public void incrementCurrentRadius(double d) {
-		currentRadius += d;
 	}
 	
 	public float getCurrentRadius() {

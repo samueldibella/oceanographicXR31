@@ -12,8 +12,12 @@ public class Player extends Animus{
 	boolean isAlive;
 	boolean lightsOn;
 	int chance;
+	float battery;
+	int visionRange;
 	
 	public Player(int xCo, int yCo) {
+		visionRange = 10;
+		battery = 1;
 		hp = 100;
 		speed = 50;
 		dmg = 20;
@@ -42,6 +46,11 @@ public class Player extends Animus{
 		case 1:
 			if(map[y - 1][x].getSpace() != SpaceType.WALL) {
 				y--;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -56,6 +65,11 @@ public class Player extends Animus{
 		case 2:
 			if(map[y][x + 1].getSpace() != SpaceType.WALL) {
 				x++;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -70,6 +84,11 @@ public class Player extends Animus{
 		case 3:
 			if(map[y + 1][x].getSpace() != SpaceType.WALL) {
 				y++;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
@@ -84,13 +103,18 @@ public class Player extends Animus{
 		case 4:
 			if(map[y][x - 1].getSpace() != SpaceType.WALL) {
 				x--;
+				
+				if(lightsOn) {
+					battery -= .01;
+				}
+				
 				if(chance > 4) {
 					hp--;
 					chance = 0;
 				}
 				Game.setPlayerTurn(false); 
 			} else {
-				Game.addBuffer("Your manifest destiny falls flat.");
+				Game.addBuffer("This geometry is confusing.");
 			}
 			break;
 
@@ -134,6 +158,11 @@ public class Player extends Animus{
 			} else {
 				Game.addBuffer("There's nothing there.");
 			}
+			
+			if(lightsOn) {
+				battery -= .01;
+			}
+			
 			break;
 			
 		//SPACE: the lights
@@ -146,9 +175,7 @@ public class Player extends Animus{
 			
 			lightsOn = !lightsOn;
 			break;
-		}
-		
-		
+		}	
 
 		if(hp < 0) {
 			isAlive = false;
@@ -165,7 +192,7 @@ public class Player extends Animus{
 		output += "--------------------------\n";
 		output += "Level: " + (currentLevel + 1) + "\n";
 		output += "Oxygen: " + hp + "%\n";
-		output += "X: " + x + " Y: " + y + "\n";
+		output += String.format("Light Battery: %.2f \n", battery);
 		output += "--------------------------\n";
 
 		return output;
@@ -200,5 +227,10 @@ public class Player extends Animus{
 	
 	public boolean getLights() {
 		return lightsOn;
+	}
+	
+	public int getVision() {
+		
+		return (int) ((int) visionRange * battery);
 	}
 }
