@@ -231,6 +231,6 @@ public class Player extends Animus{
 	
 	public int getVision() {
 		
-		return (int) ((int) visionRange * battery);
+		return (int) ((int) visionRange);
 	}
 }

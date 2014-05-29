@@ -110,7 +110,7 @@ public class Level extends PApplet{
 					} else if(randomGen > (998 - difficulty)) {
 						design[j][i].setItem(ItemType.ECHO);
 					} else if(randomGen > (997 - difficulty)) {
-						design[j][i].setItem(ItemType.ADRL);
+						//design[j][i].setItem(ItemType.ADRL);
 					} else if(randomGen > (996 - difficulty)) {
 						design[j][i].setItem(ItemType.OXYGEN);
 					} else if(randomGen > (995 - difficulty)) {
